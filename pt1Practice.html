@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập Lịch sử Đảng - 270 Câu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .option-btn, .part-btn {
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+        }
+        .part-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .correct {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d !important;
+        }
+        .incorrect {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c !important;
+        }
+        .disabled-options .option-btn:not(.correct):not(.incorrect) {
+            opacity: 0.6;
+        }
+        .disabled-options .option-btn {
+             pointer-events: none;
+        }
+        .hidden {
+            display: none;
+        }
+        .progress-bar {
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+            height: 8px;
+        }
+        .progress-bar-fill {
+            background-color: #4f46e5;
+            height: 100%;
+            transition: width 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-3xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Ôn tập Lịch sử Đảng</h1>
+            <p id="header-subtitle" class="text-gray-600 mt-2">Chọn một phần để bắt đầu hoặc xem lại các câu sai.</p>
+        </header>
+
+        <!-- Home Container -->
+        <div id="home-container">
+            <div id="parts-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                <!-- Part buttons will be generated here -->
+            </div>
+            <div class="mt-6">
+                <button id="review-all-incorrect-btn" class="part-btn w-full bg-red-600 text-white p-5 rounded-xl shadow-md flex justify-between items-center hover:bg-red-700">
+                    <span class="font-semibold text-lg">Xem lại các câu sai</span>
+                    <span id="incorrect-count-badge" class="bg-white text-red-600 font-bold text-sm px-2.5 py-1 rounded-full">0</span>
+                </button>
+            </div>
+             <div class="text-center mt-6">
+                 <button id="reset-all-btn" class="text-sm font-medium text-gray-500 hover:text-red-600">Xoá toàn bộ tiến độ</button>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <main id="quiz-container" class="hidden bg-white rounded-xl shadow-lg p-6 sm:p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div id="progress" class="text-lg font-semibold text-indigo-600">Câu 1 / 30</div>
+                <button id="back-to-home-btn-quiz" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">Về trang chủ</button>
+            </div>
+            <div id="question" class="text-xl font-medium text-gray-900 leading-relaxed mb-6 min-h-[6rem]"></div>
+            <div id="options" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            <div id="feedback" class="mt-6 text-center font-semibold h-6"></div>
+            <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+                <button id="prev-btn" class="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">Câu trước</button>
+                <button id="next-btn" class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-sm hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">Câu tiếp</button>
+            </div>
+        </main>
+
+        <!-- Review Container -->
+        <div id="review-container" class="hidden bg-white rounded-xl shadow-lg p-8">
+             <div class="flex justify-between items-center mb-6">
+                <h2 id="review-title" class="text-2xl font-bold text-gray-800">Các câu trả lời sai</h2>
+                <button id="back-to-home-btn-review" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">Về trang chủ</button>
+            </div>
+            <div id="incorrect-answers-list" class="space-y-8 max-h-[60vh] overflow-y-auto pr-2"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const questions = [
+            // Questions 1-270
+            { question: "Điền từ còn thiếu: “Đảng Cộng sản Việt Nam là đội tiền phong của giai cấp công nhân..., Đảng lấy chủ nghĩa Mác - Lênin và Tư tưởng Hồ Chí Minh làm nền tảng tư tưởng, kim chỉ nam cho hành động, lấy ......làm nguyên tắc tổ chức cơ bản”", options: ["Phê bình và tự phê bình", "Tập trung dân chủ", "Đoàn kết thống nhất trong Đảng", "Kỷ luật nghiêm minh, tự giác"], answer: 1 },
+            { question: "Đối tượng nghiên cứu của khoa học Lịch sử Đảng Cộng sản Việt Nam là:", options: ["Các cán bộ, đảng viên Đảng Cộng sản Việt Nam", "Những mặt hạn chế trong quá trình lãnh đạo của Đảng", "Sự ra đời, phát triển và hoạt động lãnh đạo của Đảng qua các thời kỳ lịch sử", "Các văn kiện của Đảng chuẩn bị được lưu hành"], answer: 2 },
+            { question: "Lịch sử Đảng Cộng sản Việt Nam có các chức năng nổi bật nào khác ngoài chức năng của khoa học lịch sử?", options: ["Nhận thức, điều tiết, chọn lọc và tìm kiếm", "Nhận thức, giáo dục, dự báo và phê phán", "Tuyên truyền, phổ cập, giáo huấn và phổ quát", "Giáo dục, sàng lọc, tuyên truyền và tìm kiếm"], answer: 1 },
+            { question: "Một trong những nhiệm vụ hàng đầu khi nghiên cứu khoa học Lịch sử Đảng Cộng sản Việt Nam là:", options: ["Khẳng định, chứng minh giá trị khoa học của những mục tiêu chiến lược và sách lược cách mạng mà Đảng đề ra", "Làm cho người học hiểu được quyền lực của Đảng", "Chọn lọc ra những sự kiện lịch sử nổi bật", "Tìm hiểu về lịch sử ra đời của đảng cộng sản trên thế giới"], answer: 0 },
+            { question: "Trong phương pháp nghiên cứu Lịch sử Đảng, cần nắm vững chủ nghĩa nào?", options: ["Chủ nghĩa duy vật biện chứng và chủ nghĩa duy vật lịch sử", "Chủ nghĩa duy vật và chủ nghĩa duy tâm", "Chủ nghĩa duy lý và chủ nghĩa duy vật biện chứng", "Chủ nghĩa duy lý và chủ nghĩa duy vật lịch sử"], answer: 0 },
+            { question: "Tại sao cần vận dụng chủ nghĩa duy vật lịch sử khi nghiên cứu Lịch sử Đảng?", options: ["Để thấy được sự ưu việt của Đảng Cộng sản Việt Nam", "Để nhận thức tiến trình cách mạng do Đảng Cộng sản Việt Nam lãnh đạo", "Để hiểu sứ mệnh lịch sử của giai cấp nông dân", "Để hiểu vì sao cách mạng giải phóng dân tộc ở Việt Nam đi theo con đường tư sản"], answer: 1 },
+            { question: "Nghiên cứu Lịch sử Đảng dựa trên phương pháp nào khi xem xét các hiện tượng lịch sử để vạch ra bản chất, quy luật chung?", options: ["Phương pháp lịch sử", "Phương pháp chọn lọc", "Phương pháp làm việc nhóm", "Phương pháp logic"], answer: 3 },
+            { question: "Tại sao cần coi trọng phương pháp tổng kết thực tiễn lịch sử trong nghiên cứu Lịch sử Đảng?", options: ["Làm rõ kinh nghiệm, bài học, quy luật phát triển của cách mạng Việt Nam", "Làm hài lòng người dân", "Dễ dàng thống kê những thành tựu", "Chứng tỏ sự linh hoạt của Đảng"], answer: 0 },
+            { question: "Việc thảo luận, trao đổi các vấn đề do giảng viên đưa ra trong môn Lịch sử Đảng được gọi là:", options: ["Phương pháp làm việc khách quan", "Phương pháp làm việc nhóm", "Phương pháp làm việc chủ quan", "Phương pháp làm việc biện chứng"], answer: 1 },
+            { question: "Ý nghĩa của việc học tập môn Lịch sử Đảng đối với sinh viên là:", options: ["Tích cực cổ vũ “tự diễn biến”, “tự chuyển hoá”", "Giáo dục lý tưởng, truyền thống, bồi đắp niềm tin vào sự lãnh đạo của Đảng", "Tin vào sự lãnh đạo của Đảng theo con đường tư bản chủ nghĩa", "Tham gia cải cách Đảng theo mô hình Đông Âu và Liên Xô"], answer: 1 },
+            { question: "Mâu thuẫn cơ bản của xã hội Việt Nam từ khi Pháp xâm lược là gì?", options: ["Dân tộc ta với thực dân Pháp, nông dân với địa chủ phong kiến", "Công nhân với tư bản, nông dân với địa chủ phong kiến", "Nông dân với địa chủ phong kiến, tư sản với vô sản", "Nông dân, công nhân với địa chủ phong kiến"], answer: 0 },
+            { question: "Giai cấp mới nào ra đời ở Việt Nam dưới tác động của cuộc khai thác thuộc địa lần thứ nhất của Pháp?", options: ["Tư sản", "Nông dân", "Công nhân", "Tiểu tư sản"], answer: 2 },
+            { question: "Trước khi Pháp xâm lược (1858), xã hội Việt Nam có những giai cấp cơ bản nào?", options: ["Địa chủ phong kiến và nông dân", "Địa chủ phong kiến và công nhân", "Công nhân và nông dân", "Nông dân và tri thức"], answer: 0 },
+            { question: "Điểm chung của các phong trào yêu nước ở Việt Nam trước khi có Đảng là gì?", options: ["Không nhận được sự ủng hộ của người dân", "Không thông qua ý kiến của Quốc tế Cộng sản", "Không có đường lối rõ ràng dẫn đến thất bại", "Không có đủ tiềm lực tài chính"], answer: 2 },
+            { question: "Thực dân Pháp đã thực hiện chính sách gì về văn hoá xã hội để cai trị nước ta?", options: ["Ngu dân", "Bế quan toả cảng", "Đốt sách chôn Nho", "Chia để trị"], answer: 0 },
+            { question: "Đặc điểm của tầng lớp tư sản mại bản Việt Nam dưới thời Pháp thuộc là:", options: ["Có sự tham gia vào đời sống chính trị, kinh tế của chính quyền thực dân Pháp", "Có tiềm lực kinh tế mạnh, đông đảo nhất", "Không có tư liệu sản xuất, phải bán sức lao động", "Chịu ba tầng áp bức, bóc lột"], answer: 0 },
+            { question: "Vì sao tầng lớp tiểu tư sản không thể lãnh đạo cách mạng chống Pháp?", options: ["Địa vị kinh tế, chính trị gắn chặt với Pháp", "Hoàn toàn không có mâu thuẫn với Pháp", "Địa vị kinh tế bấp bênh, thái độ hay dao động", "Nhận được nhiều cảm tình của Pháp"], answer: 2 },
+            { question: "Nhiệm vụ hàng đầu của cách mạng Việt Nam cuối thế kỷ XIX - đầu thế kỷ XX là:", options: ["Giải phóng dân tộc", "Đấu tranh giai cấp", "Canh tân đất nước", "Chia lại ruộng đất"], answer: 0 },
+            { question: "Sự kiện nào đánh dấu phong trào công nhân Việt Nam hoàn toàn trở thành một phong trào tự giác?", options: ["Tổ chức công hội ở Sài Gòn (1920)", "Bãi công ở Ba Son (1925)", "Ra đời ba tổ chức cộng sản (1929)", "Đảng Cộng sản Việt Nam ra đời (1930)"], answer: 3 },
+            { question: "Sự kiện nào được Nguyễn Ái Quốc đánh giá “như chim én nhỏ báo hiệu mùa xuân”?", options: ["Cách mạng Tháng Mười Nga (1917)", "Thành lập Đảng Cộng sản Pháp (1920)", "Vụ mưu sát toàn quyền Méc-Lanh của Phạm Hồng Thái (1924)", "Ra đời Hội Việt Nam cách mạng Thanh niên (1925)"], answer: 2 },
+            { question: "Phong trào đình công của công nhân Việt Nam (1926-1929) thuộc khuynh hướng nào?", options: ["Phong kiến", "Dân chủ tư sản", "Vô sản", "Dân chủ"], answer: 2 },
+            { question: "Ai đại diện cho chủ trương dùng bạo động để giành độc lập dân tộc?", options: ["Bùi Quang Chiêu", "Phan Châu Trinh", "Phan Bội Châu", "Nguyễn Ái Quốc"], answer: 2 },
+            { question: "Sự kiện nào đánh dấu bước ngoặt Nguyễn Ái Quốc từ người yêu nước trở thành người cộng sản?", options: ["Bỏ phiếu tán thành gia nhập Quốc tế III và tham gia thành lập Đảng Cộng sản Pháp", "Đọc Sơ thảo luận cương của Lênin", "Gửi Bản yêu sách của nhân dân An Nam", "Ra đi tìm đường cứu nước"], answer: 0 },
+            { question: "Cơ quan ngôn luận của Hội Liên hiệp các dân tộc thuộc địa là tờ báo nào?", options: ["Thanh niên", "Cờ đỏ", "Độc lập", "Người cùng khổ"], answer: 3 },
+            { question: "Nguyễn Ái Quốc đọc Sơ thảo luận cương của Lênin trên báo Nhân đạo vào năm nào?", options: ["1919", "1920", "1921", "1922"], answer: 1 },
+            { question: "Phong trào cách mạng Việt Nam cuối 1928 - đầu 1929 đã hình thành làn sóng cách mạng nào?", options: ["Cách mạng tư sản dân quyền", "Cách mạng dân tộc, dân chủ", "Cách mạng văn hoá", "Cách mạng tư sản"], answer: 1 },
+            { question: "Khẩu hiệu “Không thành công thì cũng thành nhân” được dùng trong cuộc khởi nghĩa nào?", options: ["Ba Đình", "Bãi Sậy", "Yên Bái", "Hương Khê"], answer: 2 },
+            { question: "Tác phẩm nào của Nguyễn Ái Quốc vạch rõ âm mưu của chủ nghĩa đế quốc dưới vỏ bọc “khai hoá văn minh”?", options: ["Bản án chế độ thực dân Pháp", "Đường Kách mệnh", "Nhật ký trong tù", "Con rồng tre"], answer: 0 },
+            { question: "Hoạt động nào của Nguyễn Ái Quốc là sự chuẩn bị về tổ chức cho việc thành lập Đảng?", options: ["Mở các lớp huấn luyện chính trị (1925-1927)", "Chủ trì Hội nghị hợp nhất (2/1930)", "Tham gia sáng lập Đảng Cộng sản Pháp (12/1920)", "Thành lập Hội Việt Nam Cách mạng Thanh niên (6/1925)"], answer: 3 },
+            { question: "Cơ quan ngôn luận của Hội Việt Nam Cách mạng Thanh niên là tờ báo nào?", options: ["Người cùng khổ", "Lao động", "Công nhân", "Thanh niên"], answer: 3 },
+            { question: "Sự kiện nào đánh dấu giai cấp công nhân Việt Nam bước đầu đi vào đấu tranh tự giác?", options: ["Bãi công thợ nhuộm Sài Gòn (1922)", "Tổng bãi công Bắc Kỳ (1922)", "Bãi công thợ máy Ba Son (1925)", "Bãi công nhà máy sợi Nam Định (1930)"], answer: 2 },
+            { question: "Tác phẩm nào của Nguyễn Ái Quốc chuẩn bị về tư tưởng, chính trị cho việc thành lập Đảng?", options: ["Bản án chế độ thực dân Pháp (1925)", "Đường Kách mệnh (1927)", "Đông Dương (1924)", "Nhật ký trong tù (1943)"], answer: 1 },
+            { question: "Tính chất và nhiệm vụ cách mạng Việt Nam trong “Đường Kách mệnh” là:", options: ["Giải phóng dân tộc tiến lên chủ nghĩa xã hội", "Tư sản dân quyền và thổ địa cách mạng để đi tới xã hội cộng sản", "Canh tân đất nước theo xu hướng Nhật", "Cách mạng xã hội chủ nghĩa"], answer: 1 },
+            { question: "Chi bộ Cộng sản thành lập ở Bắc Kỳ (3/1929) nhằm mục đích gì?", options: ["Củng cố ảnh hưởng của Hội VNCMTN", "Xây dựng đội ngũ cán bộ", "Thành lập Đội Việt Nam tuyên truyền giải phóng quân", "Chuẩn bị thành lập đảng cộng sản thay thế Hội VNCMTN"], answer: 3 },
+            { question: "Tổ chức nào được Nguyễn Ái Quốc thành lập tại Quảng Châu (6/1925)?", options: ["Tâm tâm xã", "Hội Việt Nam Cách mạng đồng minh", "Hội Liên hiệp thuộc địa", "Hội Việt Nam Cách mạng Thanh niên"], answer: 3 },
+            { question: "Tổ chức cộng sản nào ra đời đầu tiên ở Việt Nam?", options: ["Hội Việt Nam Cách mạng Thanh niên", "Đông Dương Cộng sản Đảng", "An Nam Cộng sản Đảng", "Đông Dương Cộng sản Liên đoàn"], answer: 1 },
+            { question: "Đông Dương Cộng sản Đảng và An Nam Cộng sản Đảng ra đời từ tổ chức tiền thân nào?", options: ["Tân Việt Cách mạng Đảng", "Hội Việt Nam Cách mạng Thanh niên", "Việt Nam Cách mạng đồng chí Hội", "Tâm tâm xã"], answer: 1 },
+            { question: "Ý nghĩa của phong trào Vô sản hoá (1928) là:", options: ["Truyền bá tư tưởng vô sản, xây dựng tổ chức của công nhân", "Khuyến khích công nhân đập phá máy móc", "Truyền bá chủ nghĩa Mác - Lênin vào nông dân", "Giúp nông dân nhận ra sứ mệnh lãnh đạo"], answer: 0 },
+            { question: "Sự ra đời của ba tổ chức cộng sản (1929) khẳng định điều gì?", options: ["Cách mạng Việt Nam đã có bước phát triển về chất", "Cách mạng Việt Nam đã vượt qua khủng hoảng đường lối", "Cách mạng Việt Nam đã đủ mạnh", "Cách mạng Việt Nam đã trở thành bộ phận cách mạng thế giới"], answer: 0 },
+            { question: "Yêu cầu bức thiết của cách mạng Việt Nam khi các tổ chức cộng sản hoạt động biệt lập là gì?", options: ["Giải tán các tổ chức cộng sản", "Giảng hoà sự bài xích", "Thống nhất các tổ chức cộng sản", "Kiểm điểm nghiêm túc các tổ chức"], answer: 2 },
+            { question: "Trong Cương lĩnh chính trị đầu tiên, mục tiêu chiến lược của cách mạng Việt Nam là gì?", options: ["Xã hội chủ nghĩa", "Dân quyền cách mạng", "Dân tộc dân chủ", "Dân tộc dân chủ nhân dân"], answer: 1 },
+            { question: "Cương lĩnh chính trị đầu tiên xác định giai cấp nào là lực lượng lãnh đạo cách mạng?", options: ["Tư sản", "Công nhân", "Nông dân", "Địa chủ"], answer: 1 },
+            { question: "Sự kiện nào được Nguyễn Ái Quốc đánh giá “giai cấp vô sản ta đã trưởng thành và đủ sức lãnh đạo cách mạng”?", options: ["Hội nghị Thành lập Đảng (1930)", "Chi bộ Cộng sản đầu tiên ra đời (1929)", "Thành lập tổ chức Công hội đỏ Bắc Kỳ (1929)", "Sự ra đời của ba tổ chức Cộng sản (1929)"], answer: 0 },
+            { question: "Hai văn kiện nào được coi là Cương lĩnh chính trị đầu tiên của Đảng?", options: ["Chánh cương vắn tắt và Lời kêu gọi", "Sách lược vắn tắt và Lời kêu gọi", "Chánh cương vắn tắt và Sách lược vắn tắt", "Sách lược vắn tắt và Chương trình tóm tắt"], answer: 2 },
+            { question: "Nội dung nào sau đây nằm trong Cương lĩnh chính trị đầu tiên của Đảng?", options: ["Đánh đổ đế quốc Pháp và phong kiến, làm cho nước Nam hoàn toàn độc lập", "Tư sản dân quyền cách mạng là thời kỳ dự bị", "Chỉ có giải phóng giai cấp vô sản thì mới giải phóng được dân tộc", "Giai cấp nông dân là lực lượng lãnh đạo"], answer: 0 },
+            { question: "Nhiệm vụ trước mắt của giai cấp công nhân thế giới theo Đại hội VII Quốc tế Cộng sản (7/1935) là gì?", options: ["Giành lại ruộng đất cho nông dân", "Chống chủ nghĩa phát-xít, chống chiến tranh, bảo vệ dân chủ và hòa bình", "Chống bóc lột sức lao động trẻ em", "Loại bỏ giai cấp tư sản"], answer: 1 },
+            { question: "Văn kiện “Chung quanh vấn đề chính sách mới” (10/1936) cho rằng cuộc dân tộc giải phóng không nhất thiết phải kết hợp với:", options: ["Cách mạng điền địa", "Cách mạng dân tộc dân chủ nhân dân", "Cách mạng tư sản", "Cách mạng vô sản"], answer: 0 },
+            { question: "Điều kiện nào tạo khả năng đấu tranh công khai, hợp pháp cho cách mạng Đông Dương (1936-1939)?", options: ["Sự xuất hiện chủ nghĩa tư bản", "Đảng Cộng sản Pháp giao quyền cai trị cho Nhật", "Mặt trận nhân dân Pháp lên cầm quyền", "Chiến tranh Thế giới thứ hai kết thúc"], answer: 2 },
+            { question: "Nhiệm vụ của cách mạng Việt Nam thời kỳ 1936-1939 là:", options: ["Đánh đuổi quân Tưởng", "Tịch thu ruộng đất của địa chủ", "Chống phát-xít, chống chiến tranh đế quốc, đòi tự do, dân chủ, cơm áo hòa bình", "Đàm phán ngoại giao với Pháp"], answer: 2 },
+            { question: "Hình thức đấu tranh mới xuất hiện trong phong trào dân chủ 1936-1939 là:", options: ["Mít-tinh biểu tình", "Đấu tranh nghị trường", "Đấu tranh chính trị", "Bãi khoá, bãi công"], answer: 1 },
+            { question: "Kẻ thù nguy hại trước mắt của nhân dân Đông Dương trong những năm 1936-1939 là:", options: ["Chủ nghĩa phát-xít và phong kiến tay sai", "Chủ nghĩa đế quốc và phong kiến", "Phong kiến và tư sản mại bản", "Phản động thuộc địa và bè lũ tay sai"], answer: 3 },
+            { question: "Một trong những ý nghĩa của phong trào dân chủ 1936-1939 là:", options: ["Pháp chấp nhận tất cả yêu sách dân chủ", "Giúp cán bộ, đảng viên được rèn luyện và trưởng thành", "Pháp rút quân khỏi Việt Nam", "Đưa cán bộ của Đảng vào Nghị trường Pháp"], answer: 1 },
+            { question: "Tháng 3/1938, Đảng thành lập tổ chức nào để tập hợp lực lượng chống phát-xít?", options: ["Mặt trận Liên Việt", "Mặt trận Thống nhất Dân tộc phản đế Đông Dương", "Mặt trận Nhân dân phản đế Đông Dương", "Mặt trận Dân chủ Đông Dương"], answer: 3 },
+            { question: "Phong trào nào được coi là cuộc diễn tập lần thứ hai cho Cách mạng Tháng Tám 1945?", options: ["Phong trào cách mạng 1930-1931", "Cuộc vận động dân chủ 1936-1939", "Cuộc vận động giải phóng dân tộc 1939-1945", "Cao trào kháng Nhật cứu nước"], answer: 1 },
+            { question: "Nhiệm vụ trung tâm của cách mạng Việt Nam giai đoạn 1939-1945 là:", options: ["Chuẩn bị khởi nghĩa vũ trang", "Giành lại ruộng đất cho dân cày", "Phá kho thóc Nhật để cứu đói", "Thành lập Mặt trận Việt Minh"], answer: 0 },
+            { question: "Nhiệm vụ hàng đầu của cách mạng Việt Nam giai đoạn 1939-1945 là gì?", options: ["Đòi quyền dân chủ", "Giải phóng dân tộc", "Đánh đổ phong kiến", "Đánh đổ tư sản"], answer: 1 },
+            { question: "Khi CTTG II bùng nổ, Đảng đã có hoạt động gì để thích ứng?", options: ["Tuyên bố tự giải tán", "Hợp tác với Pháp để đảo chính Nhật", "Rút vào hoạt động bí mật, chuyển trọng tâm về nông thôn", "Tăng cường hoạt động chống phát-xít ở thành phố"], answer: 2 },
+            { question: "Khi CTTG II bùng nổ, Pháp đã thi hành chính sách gì ở Việt Nam?", options: ["Kinh tế thời chiến", "Kinh tế thuộc địa thời chiến", "Kinh tế chỉ huy", "Kinh tế hàng hoá"], answer: 0 },
+            { question: "Chính sách nào của Nhật - Pháp gây ra nạn đói lớn cuối 1944 - đầu 1945?", options: ["Xuất khẩu nguyên liệu chiến lược sang Nhật", "Bắt dân nhổ lúa, trồng đay", "Đầu tư vào công nghiệp quân sự", "Kiểm soát hệ thống đường sá"], answer: 1 },
+            { question: "Hội nghị Trung ương 5/1941 xác định cách mạng Đông Dương là một cuộc cách mạng gì?", options: ["Tư sản dân quyền", "Dân chủ tư sản", "Xã hội chủ nghĩa", "Dân tộc giải phóng"], answer: 3 },
+            { question: "Nguyễn Ái Quốc về nước trực tiếp lãnh đạo cách mạng vào năm nào?", options: ["1930", "1935", "1941", "1945"], answer: 2 },
+            { question: "Tại Hội nghị Trung ương VIII (5/1941), Nguyễn Ái Quốc chủ trương thành lập mặt trận nào?", options: ["Mặt trận Liên Việt", "Mặt trận Đồng Minh", "Mặt trận Việt Minh", "Mặt trận Dân tộc thống nhất phản đế Đông Dương"], answer: 2 },
+            { question: "Chỉ thị “Nhật - Pháp bắn nhau và hành động của chúng ta” đề ra chủ trương gì?", options: ["Phát động tổng khởi nghĩa", "Phát động khởi nghĩa từng phần", "Phát động cao trào kháng Nhật cứu nước", "Phát động phong trào kháng chiến kiến quốc"], answer: 2 },
+            { question: "Điểm mới của Hội nghị VIII (5/1941) so với Hội nghị VI (11/1939) là:", options: ["Mở rộng hình thức tập hợp lực lượng", "Đề cao hơn nữa nhiệm vụ giải phóng dân tộc", "Đặt ra vấn đề giải phóng dân tộc trong từng nước Đông Dương", "Chú trọng đấu tranh vũ trang"], answer: 2 },
+            { question: "Đội Việt Nam tuyên truyền giải phóng quân ra đời vào thời gian nào?", options: ["15/10/1930", "30/12/1940", "22/12/1944", "27/11/1954"], answer: 2 },
+            { question: "Các cuộc khởi nghĩa Bắc Sơn, Nam Kì (1940) và binh biến Đô Lương (1941) để lại bài học kinh nghiệm gì?", options: ["Khởi nghĩa vũ trang và chiến tranh du kích", "Thời cơ trong khởi nghĩa giành chính quyền", "Đấu tranh ngoại giao", "Tiến hành tổng khởi nghĩa trước"], answer: 1 },
+            { question: "Lá cờ đỏ sao vàng lần đầu tiên xuất hiện trong cuộc khởi nghĩa nào?", options: ["Khởi nghĩa Yên Bái (1930)", "Khởi nghĩa Nam Kì (1940)", "Khởi nghĩa Yên Bái (1927)", "Binh biến Đô Lương (1941)"], answer: 1 },
+            { question: "Hội nghị Quân sự cách mạng Bắc Kỳ (4/1945) xác định nhiệm vụ cần kíp là:", options: ["Nhiệm vụ quân sự", "Nhiệm vụ văn hoá", "Nhiệm vụ kinh tế", "Nhiệm vụ ngoại giao"], answer: 0 },
+            { question: "Chỉ thị Nhật - Pháp bắn nhau và hành động của chúng ta (3/1945) xác định kẻ thù cụ thể trước mắt là:", options: ["Quân Nhật", "Quân Pháp", "Quân Đức", "Quân Tưởng"], answer: 0 },
+            { question: "Khẩu hiệu “Đánh đuổi Nhật - Pháp” được thay bằng “Đánh đuổi phát-xít Nhật” trong văn kiện nào?", options: ["Hội nghị Ban thường vụ Trung ương Đảng (3/1945)", "Chỉ thị Nhật - Pháp bắn nhau và hành động của chúng ta (3/1945)", "Hội nghị toàn quốc của Đảng (8/1945)", "Đại hội Quốc dân Tân Trào (8/1945)"], answer: 1 },
+            { question: "Sự kiện nào tạo thời cơ thuận lợi cho nhân dân ta giành độc lập tháng 8/1945?", options: ["Sự thất bại của phe phát-xít tại châu Mỹ", "Sự thất bại của Hồng quân Liên Xô", "Sự nổi dậy của nhân dân các nước Tây Âu", "Sự đầu hàng vô điều kiện của phát-xít Nhật"], answer: 3 },
+            { question: "Ở Châu Á, quân phiệt Nhật đầu hàng Đồng minh vô điều kiện vào năm nào?", options: ["1940", "1942", "1945", "1950"], answer: 2 },
+            { question: "Chủ trương phát động Tổng khởi nghĩa năm 1945 được Đảng đưa ra trong:", options: ["Hội nghị mở rộng Ban thường vụ (9/1945)", "Hội nghị toàn quốc của Đảng (8/1945)", "Hội nghị Quân sự cách mạng Bắc Kỳ (4/1945)", "Hội nghị lần thứ VIII của Ban Chấp hành Trung ương (5/1941)"], answer: 1 },
+            { question: "Nguyên tắc chỉ đạo khởi nghĩa được Hội nghị toàn quốc của Đảng (14-15/8/1945) xác định là:", options: ["Riêng lẻ, từng phần", "Chia từng giai đoạn nhỏ", "Tận dụng thời cơ mỗi giai đoạn", "Tập trung, thống nhất và kịp thời"], answer: 3 },
+            { question: "Đại hội Quốc dân Tân Trào (16/8/1945) đã quyết định những vấn đề gì?", options: ["Tán thành chủ trương Tổng khởi nghĩa, đặt tên nước Việt Nam Dân chủ Cộng hòa", "Thành lập mặt trận Việt Minh", "Quyết định phương châm chiến lược “táo bạo, bất ngờ, chắc thắng”", "Bầu ra các chức vụ trong Đảng"], answer: 0 },
+            { question: "Thời cơ “ngàn năm có một” của Cách mạng Tháng Tám 1945 tồn tại trong khoảng thời gian nào?", options: ["Từ sau khi Nhật đầu hàng đến khi quân Đồng minh vào Đông Dương", "Từ sau khi quân Đồng minh vào đến trước khi Nhật đầu hàng", "Từ sau khi Nhật đầu hàng đến trước khi quân Đồng minh vào Đông Dương", "Từ trước khi Nhật đầu hàng đến sau khi quân Đồng minh vào"], answer: 2 },
+            { question: "Ngày 16/8/1945, Đại hội quốc dân Tân Trào đã quyết định thành lập tổ chức nào?", options: ["Ủy ban giải phóng dân tộc Việt Nam", "Mặt trận Việt Minh", "Ủy ban khởi nghĩa toàn quốc", "Mặt trận Nhân dân Đông Dương"], answer: 0 },
+            { question: "Trước Cách mạng Tháng Tám 1945, tổ chức nào đã thực hiện nhiệm vụ của một Chính phủ lâm thời?", options: ["Ủy ban khởi nghĩa toàn quốc", "Đảng Cộng sản Đông Dương", "Ủy ban dân tộc Giải phóng Việt Nam", "Mặt trận Việt Minh"], answer: 2 },
+            { question: "Cách mạng giành chính quyền ở Hà Nội trong Cách mạng Tháng Tám nổ ra vào thời gian nào?", options: ["18/8/1945", "19/8/1945", "23/8/1945", "25/8/1945"], answer: 1 },
+            { question: "Phương pháp đấu tranh cơ bản trong Cách mạng Tháng Tám 1945 là:", options: ["Chính trị kết hợp với báo chí", "Vũ trang kết hợp với ngoại giao", "Chính trị kết hợp với vũ trang", "Chính trị kết hợp với nghị trường"], answer: 2 },
+            { question: "Nhân tố quyết định thắng lợi của Cách mạng Tháng Tám 1945 là:", options: ["Liên minh công - nông", "Bối cảnh quốc tế thuận lợi", "Sự lãnh đạo của Đảng", "Thành lập mặt trận dân tộc thống nhất"], answer: 2 },
+            { question: "Bài học kinh nghiệm hàng đầu từ Cách mạng Tháng Tám 1945 là:", options: ["Lợi dụng mâu thuẫn trong hàng ngũ kẻ thù", "Nắm vững nghệ thuật khởi nghĩa", "Toàn dân nổi dậy trên nền tảng khối liên minh công - nông", "Giương cao ngọn cờ độc lập dân tộc, kết hợp đúng đắn hai nhiệm vụ"], answer: 3 },
+            { question: "Tính chất của cuộc Cách mạng Tháng Tám 1945 là:", options: ["Cuộc cách mạng giải phóng giai cấp", "Cuộc cách mạng giải phóng dân tộc", "Cuộc cách mạng tư sản", "Cuộc cách mạng khoa học kỹ thuật"], answer: 1 },
+            { question: "Cách mạng Tháng Tám 1945 đã mở ra cho Việt Nam kỷ nguyên mới nào?", options: ["Tiến nhanh trên con đường xã hội chủ nghĩa", "Độc lập và tự do", "Giàu mạnh và phát triển", "Công nghiệp hoá - hiện đại hoá"], answer: 1 },
+            { question: "Khó khăn trong đối ngoại của Việt Nam sau Cách mạng Tháng Tám 1945 là gì?", options: ["Chưa có quốc gia nào công nhận địa vị pháp lý", "Mối quan hệ với các nước xã hội chủ nghĩa xấu đi", "Các nước tư bản bao vây, cấm vận", "Các nước ASEAN cắt viện trợ"], answer: 0 },
+            { question: "Kẻ thù nguy hiểm nhất của nước ta sau Cách mạng Tháng Tám 1945 là:", options: ["Quân đội Tưởng Giới Thạch", "Thực dân Anh", "Thực dân Pháp", "Phát-xít Nhật"], answer: 2 },
+            { question: "Âm mưu của quân Tưởng khi vào miền Bắc Việt Nam là gì?", options: ["Diệt Cộng, cầm Hồ", "Dùng Việt Nam làm bàn đạp xâm lược Campuchia", "Giúp Pháp quay trở lại", "Ngăn chặn quân Anh"], answer: 0 },
+            { question: "Tình hình tài chính nước ta sau Cách mạng Tháng Tám có đặc điểm gì?", options: ["Bị quân Trung Hoa Dân Quốc thao túng", "Ngân khố nhà nước trống rỗng", "Lệ thuộc vào ngân hàng Pháp và Nhật", "Nền tài chính quốc gia bước đầu được xây dựng"], answer: 1 },
+            { question: "Tình hình kinh tế nước ta sau Cách mạng Tháng Tám có đặc điểm gì?", options: ["Công nghiệp phát triển, nông nghiệp kém", "Nông nghiệp phát triển, công nghiệp kém", "Công nghiệp đình đốn, nông nghiệp bị hoang hóa", "Cơ cấu công - nông nghiệp đang phát triển"], answer: 2 },
+            { question: "Nhà nước Việt Nam Dân chủ Cộng hoà (1945) là nhà nước ... đầu tiên ở Đông Nam Á.", options: ["Công nông", "Phong kiến", "Tư sản", "Cộng sản"], answer: 0 },
+            { question: "Biện pháp nào không phải để giải quyết nạn đói do Chính phủ đề ra?", options: ["Bãi bỏ thuế thân", "Thu mua lương thực từ nước ngoài", "Giảm tô 25%", "Đẩy mạnh tăng gia sản xuất"], answer: 1 },
+            { question: "Chính phủ làm gì để khẳng định quyền về kinh tế - tài chính?", options: ["Phát hành đồng giấy bạc Việt Nam", "Tịch thu gia sản của đế quốc, Việt gian", "Kêu gọi đóng góp từ quần chúng", "Thu thuế nông nghiệp theo biểu thuế cũ"], answer: 0 },
+            { question: "Điền từ còn thiếu: “Một dân tộc dốt là một dân tộc ...”", options: ["Đói", "Kém", "Yếu", "Hèn"], answer: 2 },
+            { question: "Để diệt giặc dốt, Chủ tịch Hồ Chí Minh ký sắc lệnh thành lập tổ chức nào?", options: ["Bộ Quốc gia Giáo dục", "Hiệp hội Giáo dục Ngoài công lập", "Tổ chức tình nguyện vì giáo dục", "Nha Bình dân học vụ"], answer: 3 },
+            { question: "Nha Bình dân học vụ được thành lập vào năm nào?", options: ["1945", "1955", "1965", "1975"], answer: 0 },
+            { question: "Điền từ còn thiếu: “...nếu nước độc lập mà dân không được hưởng ... thì độc lập cũng chẳng có ý nghĩa gì.”", options: ["hạnh phúc, công bằng", "cơm ăn, áo mặc", "hạnh phúc, tự do", "ruộng đất, ấm no"], answer: 2 },
+            { question: "Đến cuối năm 1946, có khoảng bao nhiêu người biết đọc, viết chữ Quốc ngữ?", options: ["Hơn 1 triệu người", "Hơn 1,5 triệu người", "Hơn 2 triệu người", "Hơn 2,5 triệu người"], answer: 3 },
+            { question: "Hoạt động nào được Chủ tịch Hồ Chí Minh đặc biệt coi trọng để thể hiện tính ưu việt của chế độ mới?", options: ["Chống giặc dốt, xoá nạn mù chữ", "Trồng cây gây rừng", "Khai hoang làm kinh tế mới", "Cải cách ruộng đất"], answer: 0 },
+            { question: "Mục đích của việc xây dựng nếp sống văn hóa mới sau Cách mạng Tháng Tám là gì?", options: ["Phát triển đất nước theo văn minh phương Tây", "Hội nhập văn hoá quốc tế", "Nâng cao tinh thần chống giặc", "Đẩy lùi các tệ nạn, hủ tục, lạc hậu"], answer: 3 },
+            { question: "Để khẳng định địa vị pháp lý của Nhà nước, Đảng chủ trương tổ chức hoạt động nào?", options: ["Bầu cử toàn quốc để bầu ra Quốc hội và Chính phủ chính thức", "Xây dựng các trụ sở làm việc", "Đổi tên Đảng", "Đổi tên nước"], answer: 0 },
+            { question: "Cuộc Tổng tuyển cử toàn quốc đầu tiên của nước Việt Nam Dân chủ Cộng hoà diễn ra vào thời gian nào?", options: ["5/1/1945", "6/1/1946", "7/1/1947", "8/1/1948"], answer: 1 },
+            { question: "Hình thức bầu cử nào được Đảng đề ra để bầu Quốc hội và thành lập Chính phủ chính thức vào ngày 6/1/1946?", options: ["Giơ tay bầu trực tiếp", "Phổ thông đầu phiếu", "Chấp chính quan", "Đại cử tri đoàn"], answer: 1 },
+            { question: "Điền từ còn thiếu: “Các cơ quan của Chính phủ từ toàn quốc đến các làng, đều là ...... của dân...”", options: ["Công bộc", "Bạn hữu", "Đồng minh", "Giúp việc"], answer: 0 },
+            { question: "Quốc hội thông qua bản Hiến pháp đầu tiên của nước Việt Nam Dân chủ Cộng hoà vào năm:", options: ["1946", "1954", "1975", "1992"], answer: 0 },
+            { question: "Bản Hiến pháp đầu tiên của nước Việt Nam Dân chủ Cộng hoà do ai chủ trì soạn thảo?", options: ["Nguyễn Văn Tố", "Võ Nguyên Giáp", "Huỳnh Thúc Kháng", "Hồ Chí Minh"], answer: 3 },
+            { question: "Trước yêu cầu tăng cường lực lượng cho cách mạng và tập trung chống Pháp ở Nam Bộ đã dẫn đến sự ra đời của tổ chức:", options: ["Hội Liên hiệp Quốc dân Việt Nam", "Liên hiệp các tổ chức hữu nghị Việt Nam", "Hội Liên hiệp các dân tộc bị áp bức ở Á Đông", "Hội Liên hiệp thuộc địa ở Pa-ri"], answer: 0 },
+            { question: "Sau ngày bầu cử Quốc hội (1/1946) nước ta đã làm gì để xây dựng chính quyền địa phương?", options: ["Thành lập các đơn vị lực lượng vũ trang mới", "Thành lập các tổ du kích", "Bầu cử Hội đồng nhân dân các cấp", "Thành lập đội dân quân tự vệ"], answer: 2 },
+            { question: "Phiên họp đầu tiên của Quốc hội khóa I (2/3/1946) đã diễn ra tại:", options: ["Nhà hát lớn Hà Nội", "Nhà văn hóa thiếu nhi Hà Nội", "Sân khấu kịch Hà Nội", "Quảng trường Ba Đình"], answer: 0 },
+            { question: "Một trong những biện pháp củng cố lực lượng vũ trang cách mạng được Chính phủ đề ra sau ngày bầu cử Quốc hội là:", options: ["Tích cực mua sắm vũ khí, lương thực", "Giải tán các đội dân quân tự vệ", "Sát nhập quân đội Việt Nam vào quân đội Hoàng gia Anh", "Thực hiện các cuộc diễn tập hải quân"], answer: 0 },
+            { question: "Để xây dựng chính quyền trong sạch, vững mạnh, Chủ tịch Hồ Chí Minh yêu cầu cán bộ các cấp phải:", options: ["Duy trì lối làm việc tả khuynh, giáo điều", "Khắc phục và bỏ ngay những thói hư, tật xấu", "Khai trừ Đảng viên yếu kém", "Tạm dừng kiện toàn bộ máy chính quyền"], answer: 1 },
+            { question: "Sau ngày bầu cử (6/1/1946), Quốc hội mới đã tập trung vào công việc quan trọng nhất là:", options: ["Tổ chức khai hoang, xây dựng cuộc sống mới", "Kêu gọi người dân góp tiền và hiện vật", "Tổ chức cuộc kháng chiến chống thực dân Pháp ở Nam Bộ", "Xây dựng hệ thống trường đại học"], answer: 2 },
+            { question: "Hội đồng cố vấn Chính phủ Cách mạng lâm thời (1945) do ai đứng đầu?", options: ["Vĩnh Thụy", "Phạm Văn Đồng", "Hồ Chí Minh", "Nguyễn Hải Thần"], answer: 0 },
+            { question: "Cuộc kháng chiến chống Pháp xâm lược lần thứ hai của nhân dân ta diễn ra vào thời gian nào?", options: ["1930-1945", "1945-1975", "1858-1930", "1946-1954"], answer: 3 },
+            { question: "Hội nghị toàn xứ Đảng bộ Nam Kỳ (25/10/1945) được tổ chức tại đâu?", options: ["Dinh Độc lập (Sài Gòn)", "Cái Bè (Mỹ Tho)", "Năm Căn (Cà Mau)", "Rạch Giá (Kiên Giang)"], answer: 1 },
+            { question: "Hội nghị toàn xứ Đảng bộ Nam Kỳ (25/10/1945) đã quyết định:", options: ["Rút lui vào hoạt động bí mật", "Tạm thời giải tán các tổ chức Đảng", "Tiếp tục hòa hoãn với Pháp", "Củng cố lực lượng, kiên quyết đẩy lùi cuộc tấn công của quân Pháp"], answer: 3 },
+            { question: "“Thành đồng Tổ quốc” là danh hiệu Chủ tịch Hồ Chí Minh tặng nhân dân vùng nào?", options: ["Bắc Bộ", "Trung Bộ", "Nam Bộ", "Tây Nguyên"], answer: 2 },
+            { question: "Để làm thất bại âm mưu “Diệt Cộng, cầm Hồ” của quân Tưởng, Đảng ta đã thực hiện sách lược:", options: ["Ký hòa ước có lợi cho quân Nhật", "Tiến hành xung đột vũ trang với quân Tưởng", "Đưa ra yêu sách đòi quân Tưởng rút quân", "Hòa hoãn, nhân nhượng có nguyên tắc với quân Tưởng"], answer: 3 },
+            { question: "Chính sách được Đảng và Chủ tịch Hồ Chí Minh dùng để đối phó với quân Tưởng là:", options: ["Giao thiệp thân thiện, ứng xử mềm dẻo, linh hoạt", "Mời Tưởng Giới Thạch làm chủ tịch Quốc hội", "Liên minh với Pháp để đuổi quân Tưởng", "Giao chính phủ cho quân Tưởng"], answer: 0 },
+            { question: "Ngày 11/11/1945, Đảng chủ trương tự giải tán nhằm mục đích:", options: ["Từ bỏ quyền lãnh đạo cách mạng", "Giao lại quyền lãnh đạo cho Pháp", "Tránh mũi nhọn tấn công của Pháp và Tưởng", "Thừa nhận sự cai trị của quân Tưởng"], answer: 2 },
+            { question: "Đảng rút vào hoạt động bí mật (1945), chỉ để lại một bộ phận hoạt động công khai với danh nghĩa:", options: ["Hội nghiên cứu văn hóa Đông Dương", "Hội nghiên cứu chủ nghĩa Mác ở Đông Dương", "Hội nhà báo Đông Dương", "Hội những người yêu thiên nhiên Đông Dương"], answer: 1 },
+            { question: "Khẩu hiệu của nhân dân Nam Bộ trong những ngày đầu chống Pháp (lần 2) là:", options: ["Thà chết tự do còn hơn sống nô lệ", "Quyết tử để Tổ quốc quyết sinh", "Thóc không thiếu một cân, quân không thiếu một người", "Vững tay súng, chắc tay cày"], answer: 0 },
+            { question: "Để hạn chế sự chống phá của Việt Quốc, Việt Cách, Đảng đã thực hiện chủ trương nào?", options: ["Bổ sung 70 ghế Quốc hội không qua bầu cử", "Bao vây, buộc rút quân về nước", "Cung cấp thuốc men, đạn dược", "Chấp nhận dùng tiền Quan kim, Quốc tệ"], answer: 0 },
+            { question: "Hiệp ước Trùng Khánh (Hiệp ước Hoa - Pháp) được ký kết vào năm nào?", options: ["1930", "1946", "1954", "1975"], answer: 1 },
+            { question: "Bản chất của Hiệp ước Hoa - Pháp (28/2/1946) là hợp pháp hoá hành động xâm lược của:", options: ["Thực dân Pháp", "Quân đội Trung Quốc", "Quân đội Nhật Bản", "Đế quốc Mỹ"], answer: 0 },
+            { question: "Đảng chủ trương hòa hoãn với Pháp nhằm:", options: ["Tiêu diệt giặc nội xâm, phát triển kinh tế", "Tìm các liên minh quân sự", "Tiêu diệt tay sai, thúc đẩy nhanh quân Tưởng về nước", "Lôi kéo sự ủng hộ của chính phủ Pháp"], answer: 2 },
+            { question: "Ngày 6/3/1946, Chủ tịch Hồ Chí Minh đã ký với Pháp văn bản nào?", options: ["Tạm ước", "Tạm ước sơ bộ", "Hiệp ước sơ bộ", "Hiệp định sơ bộ"], answer: 3 },
+            { question: "Hiệp ước Hoa - Pháp (28/2/1946) đẩy cách mạng Việt Nam vào tình thế:", options: ["Cùng lúc đối mặt với Pháp và Tưởng", "Chính phủ phải giao lại Quốc hội cho quân Tưởng", "Quốc hội có nguy cơ giải tán", "Nạn đói có thể bùng phát trở lại"], answer: 0 },
+            { question: "Một trong những nội dung của Hiệp định Sơ bộ (6/3/1946) là:", options: ["Pháp có toàn quyền khai thác khoáng sản 30 năm", "Việt Nam đồng ý cho quân Pháp đóng quân", "Quân Pháp phải rút quân dần trong 5 năm", "Việt Nam cung cấp lương thực cho Pháp để đánh Tưởng"], answer: 2 },
+            { question: "Hiệp định Sơ bộ (6/3/1946) có ý nghĩa giúp chúng ta có thêm thời gian để:", options: ["Chuẩn bị lực lượng mọi mặt cho cuộc kháng chiến với Pháp", "Xây dựng chủ nghĩa xã hội", "Khai hoang các vùng đất phía Nam", "Tổ chức bầu cử"], answer: 0 },
+            { question: "Chủ trương hoà hoãn, nhân nhượng với Pháp được thể hiện rõ trong bản Chỉ thị nào?", options: ["Kháng chiến kiến quốc", "Hoà để tiến", "Nhật - Pháp bắn nhau và hành động của chúng ta", "Toàn dân kháng chiến"], answer: 1 },
+            { question: "Nguyên nhân sâu xa dẫn đến sự kiện Toàn quốc kháng chiến (cuối 1946) là:", options: ["Việt Nam đã có lực lượng hải quân, không quân đủ mạnh", "Pháp liên tục bội ước muốn dâng nước ta cho Nhật", "Pháp đình chiến, kéo dài thời gian rút quân", "Pháp bộc lộ rõ thái độ bội ước, quyết tâm xâm lược nước ta lần nữa"], answer: 3 },
+            { question: "Tại Hà Nội, cuộc kháng chiến toàn quốc bắt đầu bằng sự kiện nào?", options: ["Loạt đại bác bắn vào thành Hà Nội từ pháo đài Láng", "Pháp đơn phương tuyên bố cắt đứt liên hệ", "Hồ Chí Minh ra lời kêu gọi Toàn quốc kháng chiến", "Pháp tấn công vào Đại Nội Huế"], answer: 0 },
+            { question: "Cuộc kháng chiến toàn quốc tại mặt trận Hà Nội (1946) kéo dài bao nhiêu ngày đêm?", options: ["54 ngày đêm", "60 ngày đêm", "72 ngày đêm", "80 ngày đêm"], answer: 1 },
+            { question: "Phương châm kháng chiến của Đảng trong giai đoạn 1945-1947 là gì?", options: ["Đánh nhanh, thắng nhanh", "Đánh chắc, tiến chắc", "Toàn dân, toàn diện, lâu dài, tự lực cánh sinh", "Chiến đấu cầm chừng, phát triển kinh tế"], answer: 2 },
+            { question: "Tác phẩm “Kháng chiến nhất định thắng lợi” do ai viết?", options: ["Hồ Chí Minh", "Phạm Văn Đồng", "Võ Nguyên Giáp", "Trường Chinh"], answer: 3 },
+            { question: "Tính đến năm 1950, những nhà nước nào đã công nhận và đặt quan hệ ngoại giao với Việt Nam Dân chủ Cộng hoà?", options: ["Trung Quốc, Liên Xô, Lào, Triều Tiên", "Trung Quốc, Liên Xô, các nước Đông Âu, Triều Tiên", "Trung Quốc, Liên Xô, Lào, Campuchia", "Trung Quốc, Liên Xô, các nước Đông Âu, Lào"], answer: 1 },
+            { question: "Một trong những mục đích của Chiến dịch Biên giới Thu Đông 1950 là:", options: ["Mở rộng căn cứ địa Việt Bắc", "Khai thông biên giới Việt Nam - Lào - Campuchia", "Ngăn chặn sự tiếp viện của Mỹ cho Pháp", "Giành thắng lợi quyết định kết thúc chiến tranh"], answer: 0 },
+            { question: "Sắc lệnh về nghĩa vụ quân sự (11/1949) đề cập đến việc ưu tiên phát triển lực lượng ba thứ quân gồm:", options: ["Bộ đội chủ lực, bộ đội địa phương, dân quân du kích", "Bộ đội chủ lực, bộ đội địa phương, thanh niên xung phong", "Thanh niên xung phong, bộ đội địa phương, dân quân du kích", "Thanh niên xung phong, bộ đội chủ lực, dân quân du kích"], answer: 0 },
+            { question: "Chiến thắng trong Chiến dịch Biên giới Thu Đông 1950 có ý nghĩa lớn vì:", options: ["Kết thúc thời kì chiến đấu trong vòng vây", "Pháp phải trao trả lại các vùng tạm chiếm", "Đóng cửa hoàn toàn biên giới Việt Trung", "Việt Nam được giải phóng hoàn toàn"], answer: 0 },
+            { question: "Đại hội đại biểu toàn quốc lần thứ II của Đảng (2/1951) diễn ra ở đâu?", options: ["Chiêm Hoá (Tuyên Quang)", "Võ Nhai (Thái Nguyên)", "Bắc Sơn (Lạng Sơn)", "Pác Bó (Cao Bằng)"], answer: 0 },
+            { question: "Đại hội II của Đảng (2/1951) quyết định Đảng ra hoạt động công khai và lấy tên là:", options: ["Đảng Cộng sản Việt Nam", "Đảng Cộng sản Đông Dương", "Đảng Lao động Việt Nam", "Đông Dương Cộng sản Đảng"], answer: 2 },
+            { question: "Từ cuối 1950, Đảng quyết định tạm ngừng phát triển Đảng vì:", options: ["Phát triển quá nhanh dẫn đến sai lầm về tiêu chuẩn Đảng viên", "Tập trung sức lực cho kháng chiến", "Đảng viên tập trung làm kinh tế tư nhân", "Số lượng Đảng viên đã đủ"], answer: 0 },
+            { question: "Chiến dịch nào được Đảng phát động từ năm 1951?", options: ["Chiến dịch Tây Bắc Thu Đông", "Chiến dịch Hoà Bình", "Chiến dịch Thượng Lào", "Chiến dịch Nam Lào"], answer: 1 },
+            { question: "Động lực của cách mạng Việt Nam được xác định trong Đại hội II (2/1951) gồm:", options: ["Công nhân, nông dân, tiểu tư sản, tư sản mại bản", "Phong kiến, nông dân, công nhân, tư sản dân tộc", "Công nhân, nông dân, tiểu tư sản, tư sản dân tộc", "Phong kiến, nông dân, tư sản dân tộc, tư sản mại bản"], answer: 2 },
+            { question: "Mặt hạn chế của cuộc cải cách ruộng đất (1957) do Đảng phát động là:", options: ["Chia ruộng đất chưa đồng đều", "Độc đoán, quan liêu, gây ra oan sai", "Gây cản trở nâng cao năng suất", "Không chia lại ruộng đất cho bần, cố nông"], answer: 1 },
+            { question: "Tính chất của xã hội Việt Nam được xác định trong Đại hội II (2/1951) là:", options: ["Dân chủ nhân dân, một phần thuộc địa và nửa phong kiến", "Cộng sản chủ nghĩa, nửa phong kiến", "Nửa phong kiến, nửa tư bản", "Thuộc địa kiểu mới, nửa xã hội chủ nghĩa"], answer: 0 },
+            { question: "Điện Biên Phủ được giới quân sự, chính trị thế giới ca ngợi là một:", options: ["Pháo đài không thể công phá", "Cỗ máy không thể công phá", "Trận địa thép không thể công phá", "Căn cứ không thể công phá"], answer: 0 },
+            { question: "Ai được giao chức vụ Tư lệnh kiêm Bí thư Đảng uỷ chiến dịch Điện Biên Phủ?", options: ["Hồ Chí Minh", "Nguyễn Chí Thanh", "Nguyễn Vịnh", "Võ Nguyên Giáp"], answer: 3 },
+            { question: "Chiến dịch nào được Hồ Chí Minh nói là “rất quan trọng, không những về quân sự mà cả về chính trị”?", options: ["Chiến dịch Hoàng Hoa Thám", "Chiến dịch Việt Bắc - Thu Đông 1947", "Chiến dịch Hồ Chí Minh", "Chiến dịch Điện Biên Phủ"], answer: 3 },
+            { question: "Phương châm kháng chiến trong chiến dịch Điện Biên Phủ là:", options: ["Đánh chắc, tiến chắc", "Thần tốc, bất ngờ", "Táo bạo, thần tốc", "Táo bạo, chắc thắng"], answer: 0 },
+            { question: "Trận Điện Biên Phủ (1954) thắng lợi có ý nghĩa lớn đối với cách mạng thế giới vì:", options: ["Báo hiệu sự thắng lợi của nhân dân các dân tộc bị áp bức, sự sụp đổ của chủ nghĩa thực dân", "Báo hiệu sự sụp đổ của chủ nghĩa tư bản", "Làm sụp đổ hệ thống phát-xít", "Giúp các quốc gia tư bản tự giải phóng"], answer: 0 },
+            { question: "Ý nghĩa quan trọng của Hiệp định Giơ-ne-vơ (1954) đối với cách mạng Việt Nam là:", options: ["Đánh dấu kháng chiến chống Pháp thắng lợi, miền Bắc hoàn toàn giải phóng", "Đánh dấu kháng chiến chống Pháp thắng lợi, miền Nam hoàn toàn giải phóng", "Đánh dấu kháng chiến chống Mỹ thắng lợi", "Đánh dấu kháng chiến chống Pháp bước sang giai đoạn mới"], answer: 0 },
+            { question: "Hiệp định Giơ-ne-vơ được ký kết vào thời gian nào?", options: ["27/1/1954", "21/7/1954", "21/1/1954", "27/7/1954"], answer: 1 },
+            { question: "Sau Hiệp định Giơ-ne-vơ (7/1954), cách mạng miền Bắc có đặc điểm là:", options: ["Trở thành thuộc địa kiểu mới của Mỹ", "Được hoàn toàn giải phóng, đi lên con đường xã hội chủ nghĩa", "Bị Pháp tái chiếm", "Dưới sự kiểm soát của chính quyền Ngô Đình Diệm"], answer: 1 },
+            { question: "Kinh nghiệm của Đảng trong kháng chiến chống Pháp (1945-1954) là:", options: ["Kết hợp chặt chẽ hai nhiệm vụ vừa kháng chiến vừa kiến quốc", "Tập trung toàn lực vào xây dựng lực lượng vũ trang", "Tranh thủ sự ủng hộ của các nước xã hội chủ nghĩa", "Đề ra phương châm đánh nhanh, thắng nhanh"], answer: 0 },
+            { question: "Khó khăn của Đảng trong lãnh đạo cách mạng hai miền (1954-1965) là:", options: ["Pháp chưa rút quân", "Mỹ mang quân ra miền Bắc", "Cục diện Chiến tranh lạnh căng thẳng", "Đất nước bị chia làm hai miền với hai chế độ khác biệt"], answer: 3 },
+            { question: "Nguyên nhân gây ra sai lầm trong cải cách ruộng đất ở miền Bắc là:", options: ["Do chủ quan, giáo điều, không xuất phát từ thực tiễn", "Do không chuẩn bị kĩ lưỡng", "Do sự chống đối của người dân", "Do còn nhiều ruộng đất bỏ hoang"], answer: 0 },
+            { question: "Kết quả nổi bật ở miền Bắc trong ba năm (1958-1960) là:", options: ["Kinh tế tư bản phát triển cao", "Từng bước đi lên CNXH, trở thành hậu phương ổn định", "Nạn đói được đẩy lùi, dân di cư vào Nam", "Xây dựng được cơ sở sản xuất vũ khí hiện đại"], answer: 1 },
+            { question: "“Đề cương cách mạng miền Nam” của Lê Duẩn (8/1956) quan trọng vì:", options: ["Góp phần hình thành đường lối cách mạng ở miền Nam", "Giúp cách mạng miền Nam chuyển sang tiến công", "Khích lệ tinh thần những người bị tù đày", "Cổ vũ người dân lật đổ chính quyền Diệm"], answer: 0 },
+            { question: "Hội nghị TƯ 6 (7/1954) chỉ rõ kẻ thù chính và trực tiếp của nhân dân Đông Dương là:", options: ["Phát-xít", "Thực dân Pháp", "Đế quốc Mỹ", "Chủ nghĩa tư bản"], answer: 2 },
+            { question: "Nghị quyết Bộ Chính trị (9/1954) đề ra nhiệm vụ trước mắt cho cách mạng miền Nam là:", options: ["Yêu cầu Pháp rút quân", "Giúp miền Bắc xây dựng CNXH", "Lật đổ chính quyền bù nhìn thân Mỹ, thống nhất Tổ quốc", "Phát triển kinh tế theo hướng tư bản chủ nghĩa"], answer: 2 },
+            { question: "Tháng 3/1959, chính quyền Ngô Đình Diệm đã:", options: ["Thông qua luật 10/59, đặt người cộng sản ra ngoài vòng pháp luật", "Tuyên bố miền Nam trong tình trạng chiến tranh", "Mang quân ra xâm lược miền Bắc", "Tự giải tán, đưa Ngô Đình Nhu lên cầm quyền"], answer: 0 },
+            { question: "Luật 10/59 của Ngô Đình Diệm nhằm mục đích:", options: ["Dùng toà án quân sự đặc biệt để xét xử và bắn giết tại chỗ", "Gây sức ép với Mỹ tăng viện trợ", "Hợp pháp hoá việc mang quân ra Bắc", "Chuẩn bị đảo chính hất cẳng Mỹ"], answer: 0 },
+            { question: "Hội nghị TƯ 15 (1/1959) ra nghị quyết về cách mạng miền Nam với tinh thần:", options: ["Tiếp tục cách mạng dân tộc dân chủ nhân dân", "Tạm dừng cách mạng dân tộc dân chủ nhân dân", "Tiến hành bạo động giành chính quyền", "Dừng bạo lực, chuyển sang đấu tranh ngoại giao"], answer: 2 },
+            { question: "Phong trào “Đồng Khởi” (1960) lần đầu tiên diễn ra ở tỉnh:", options: ["Cà Mau", "Tiền Giang", "Cần Thơ", "Bến Tre"], answer: 3 },
+            { question: "Thủ đoạn của chính quyền Ngô Đình Diệm trong chính sách thực dân mới của Mỹ là:", options: ["Tăng cường chính sách “tố cộng, diệt cộng”", "Lập ra chính quyền tự quản", "Giải tán ấp chiến lược", "Giải tán khu trù mật, dinh điền"], answer: 0 },
+            { question: "Mặt trận Dân tộc giải phóng miền Nam Việt Nam (1960) có ý nghĩa là:", options: ["Tổ chức chính trị tập hợp quần chúng đấu tranh", "Tổ chức vũ trang huấn luyện quân đội", "Tổ chức xã hội chăm lo cho con em người cộng sản", "Tổ chức ngoại giao kêu gọi ủng hộ"], answer: 0 },
+            { question: "Phong trào nào phát triển mạnh ở miền Nam giai đoạn đầu chống Mỹ?", options: ["Đấu tranh đòi hiệp thương tổng tuyển cử", "Di dân ra Bắc", "Dồn dân, lập ấp", "Đưa cộng sản ra ngoài vòng pháp luật"], answer: 0 },
+            { question: "Thắng lợi của phong trào Đồng khởi (1960) có ý nghĩa gì với cách mạng miền Nam?", options: ["Mỹ phải xuống thang chiến tranh", "Mỹ phải rút quân", "Chuyển cách mạng từ thế giữ gìn lực lượng sang thế tiến công", "Chuyển sang lối đánh thần tốc, táo bạo"], answer: 2 },
+            { question: "Đại hội III của Đảng (9/1960) họp ở đâu?", options: ["Tuyên Quang", "Hà Giang", "Bắc Ninh", "Hà Nội"], answer: 3 },
+            { question: "Chủ đề của Đại hội III (9/1960) là:", options: ["Xây dựng CNXH ở miền Bắc và đấu tranh hoà bình thống nhất nước nhà", "Cả nước quá độ, bỏ qua giai đoạn TBCN", "Đẩy mạnh công nghiệp hoá - hiện đại hoá", "Nâng cao năng lực lãnh đạo của Đảng"], answer: 0 },
+            { question: "Nhiệm vụ của cách mạng Việt Nam trong giai đoạn mới theo Đại hội III (9/1960) là:", options: ["Cách mạng XHCN ở miền Bắc, cách mạng DTDCND ở miền Nam", "Làm nghĩa vụ quốc tế ở Đông Nam Á", "Xoá bỏ tàn tích phong kiến", "Phát triển chế độ dân chủ nhân dân"], answer: 0 },
+            { question: "Đặc điểm nổi bật nhất trong xây dựng CNXH ở miền Bắc (1961-1965) là:", options: ["Từ kinh tế nông nghiệp lạc hậu tiến thẳng lên CNXH, bỏ qua giai đoạn TBCN", "Từ kinh tế nông nghiệp lạc hậu tiến thẳng lên CNTB", "Tiến hành công nghiệp hoá trên quy mô toàn miền", "Chuyển sang kinh tế thương mại đa ngành"], answer: 0 },
+            { question: "Thành công to lớn nhất của Đại hội III (9/1960) là:", options: ["Hoàn chỉnh đường lối chiến lược chung của cách mạng Việt Nam", "Lập ra nhà nước VNDCCH", "Lần đầu đề ra Hiến pháp", "Chuyển từ kinh tế bao cấp sang hạch toán"], answer: 0 },
+            { question: "Kế hoạch 5 năm lần thứ nhất (1961-1965) được Đại hội nào đề ra?", options: ["Đại hội II", "Đại hội III", "Đại hội IV", "Đại hội V"], answer: 1 },
+            { question: "“Tàu không số” là khái niệm chỉ:", options: ["Tàu vận chuyển hàng hoá trái phép", "Tàu do Liên Xô viện trợ", "Tàu bí mật chở vũ khí, hàng hoá từ Bắc vào Nam", "Tàu gián điệp của Mỹ"], answer: 2 },
+            { question: "Chiến lược “Chiến tranh đặc biệt” của Mỹ ở miền Nam diễn ra trong thời gian nào?", options: ["1961-1965", "1960-1965", "1965-1971", "1971-1975"], answer: 0 },
+            { question: "Chiến thuật “trực thăng vận” và “thiết xa vận” được Mỹ áp dụng trong chiến lược nào?", options: ["Chiến tranh đơn phương", "Chiến tranh cục bộ", "Chiến tranh đặc biệt", "Việt Nam hoá chiến tranh"], answer: 2 },
+            { question: "Kết quả miền Bắc đạt được sau 10 năm (1954-1964) là:", options: ["Trở thành hậu phương vững chắc, đủ sức cung cấp cho tiền tuyến", "Trở thành thị trường xuất khẩu lúa gạo lớn nhất ĐNÁ", "Xây dựng được nền công nghiệp hiện đại", "Hoàn thành giai đoạn quá độ lên CNXH"], answer: 0 },
+            { question: "Ngày 15/2/1961, các lực lượng vũ trang ở miền Nam được thống nhất với tên gọi:", options: ["Đội giải phóng miền Nam Việt Nam", "Hội giải phóng miền Nam Việt Nam", "Quân giải phóng miền Nam Việt Nam", "Cục giải phóng miền Nam Việt Nam"], answer: 2 },
+            { question: "“Thóc không thiếu một cân, quân không thiếu một người” là khẩu hiệu chỉ:", options: ["Sự chi viện của hậu phương miền Bắc cho tiền tuyến miền Nam", "Sự tự cung tự cấp của người dân miền Bắc", "Sự phát triển kinh tế, quân sự của miền Bắc", "Sự gian khổ của người dân miền Bắc"], answer: 0 },
+            { question: "Tháng 12/1967, Bộ Chính trị quyết định chuyển cuộc chiến tranh sang thời kỳ mới bằng phương pháp:", options: ["Mít-tinh, biểu tình", "Tổng công kích, tổng khởi nghĩa", "Đàm phán ngoại giao", "Khởi nghĩa từng phần"], answer: 1 },
+            { question: "Cuộc tập kích bằng B52 của Mỹ vào Hà Nội, Hải Phòng cuối năm 1972 diễn ra trong:", options: ["10 ngày đêm", "12 ngày đêm", "15 ngày đêm", "30 ngày đêm"], answer: 1 },
+            { question: "Sau thất bại của “Chiến tranh cục bộ”, Mỹ dùng chiến lược nào thay thế?", options: ["Chiến tranh đơn phương", "Chiến tranh đặc biệt", "Chiến tranh cục bộ", "Việt Nam hoá chiến tranh"], answer: 3 },
+            { question: "Điểm nổi bật của chiến lược Việt Nam hoá chiến tranh là:", options: ["Sử dụng lính đánh thuê", "Sử dụng hoàn toàn quân Mỹ", "Dùng người Việt Nam đánh người Việt Nam", "Sử dụng quân tình nguyện quốc tế"], answer: 2 },
+            { question: "Điền từ còn thiếu vào câu thơ chúc tết 1969 của Bác: “Đánh cho ...... cút, đánh cho ...... nhào.”", options: ["Mỹ - Ngụy", "Mỹ - Mỹ", "Giặc - Ngụy", "Mỹ - giặc"], answer: 0 },
+            { question: "Năm 1971, quân dân Việt - Lào đã đánh bại cuộc hành quân nào của Mỹ?", options: ["Ánh sáng sao", "Lam Sơn 719", "Tây Sơn thần tốc", "Gian-xơn-xi-ti"], answer: 1 },
+            { question: "Hiệp định Pa-ri về chấm dứt chiến tranh, lập lại hoà bình ở Việt Nam được ký kết vào:", options: ["27/1/1973", "21/7/1973", "21/7/1954", "27/1/1954"], answer: 0 },
+            { question: "Cuộc tổng tiến công và nổi dậy mùa Xuân 1975 bắt đầu bằng chiến dịch nào?", options: ["Huế - Đà Nẵng", "Đường số 14", "Đường 9 - Nam Lào", "Tây Nguyên"], answer: 3 },
+            { question: "Cuộc họp Bộ chính trị ngày 18/3/1975 đã quyết định:", options: ["Đưa miền Bắc lên CNXH", "Kêu gọi Mỹ ngừng rải chất độc da cam", "Giải phóng miền Nam trong năm 1975", "Xây dựng miền Nam thành trung tâm tài chính"], answer: 2 },
+            { question: "“Thần tốc, táo bạo, bất ngờ, chắc thắng” là tinh thần của chiến dịch:", options: ["Điện Biên Phủ", "Huế - Đà Nẵng", "Hồ Chí Minh", "Tây Nguyên"], answer: 2 },
+            { question: "Ai là Tổng tư lệnh của cuộc Tổng tiến công và nổi dậy mùa Xuân 1975?", options: ["Hồ Chí Minh", "Nguyễn Chí Thanh", "Phạm Văn Đồng", "Võ Nguyên Giáp"], answer: 3 },
+            { question: "Hiệp định Pa-ri tạo ra bước ngoặt mới vì:", options: ["Quân Mỹ phải rút quân, tạo thế xoay chuyển có lợi cho cách mạng", "Quân Mỹ rút hoàn toàn khỏi miền Bắc", "Mỹ ngừng ném bom miền Nam", "Mỹ bồi thường chiến phí"], answer: 0 },
+            { question: "Ngày 2/5/1975, những địa phương cuối cùng ở miền Nam được giải phóng là:", options: ["Đồng bằng sông Cửu Long và các đảo, quần đảo", "Đông Nam Bộ và các đảo, quần đảo", "Nam Trung Bộ và các đảo, quần đảo", "Tây Nguyên và các đảo, quần đảo"], answer: 0 },
+            { question: "Kinh nghiệm quý giá trong kháng chiến chống Mỹ (1954-1975) là:", options: ["Giải quyết hài hoà nhiệm vụ hai miền Nam - Bắc", "Luôn duy trì lối đánh táo bạo, thần tốc", "Huy động mọi tầng lớp vào mặt trận quân sự", "Kiên trì mục tiêu giải phóng miền Nam trước 1975"], answer: 0 },
+            { question: "Ý nghĩa to lớn nhất của thắng lợi kháng chiến chống Mỹ là:", options: ["Giành lại độc lập, thống nhất, toàn vẹn lãnh thổ", "Đưa miền Nam thành khu đô thị kinh tế mới", "Nâng cao vị thế Việt Nam trong ASEAN", "Buộc Mỹ bồi thường chiến tranh"], answer: 0 },
+            { question: "Nguyên nhân quyết định thắng lợi kháng chiến chống Mỹ là:", options: ["Sự trợ giúp, hy sinh của hậu phương lớn miền Bắc", "Sự ủng hộ của các nước XHCN", "Sự ủng hộ của lực lượng yêu chuộng hoà bình", "Sự ủng hộ của người dân Mỹ"], answer: 0 },
+            { question: "Điền từ còn thiếu: “...một biểu tượng sáng ngời về sự toàn thắng của ... và trí tuệ con người...”", options: ["Chủ nghĩa xã hội chân chính", "Chủ nghĩa nhân đạo", "Chủ nghĩa anh hùng cách mạng", "Chủ nghĩa dân tộc nhược tiểu"], answer: 2 },
+            { question: "Hoàn cảnh lịch sử nổi bật của nước ta sau năm 1975 là:", options: ["Hoà bình, độc lập, thống nhất, cả nước quá độ lên CNXH", "Bị chia cắt làm hai miền", "Bị các nước XHCN bao vây, cấm vận", "Cơ bản trở thành nước công nghiệp hiện đại"], answer: 0 },
+            { question: "Hoạt động cấp bách của cách mạng Việt Nam sau kháng chiến chống Mỹ là:", options: ["Yêu cầu Mỹ bồi thường chiến phí", "Tìm việc làm cho Cựu chiến binh", "Hoàn thành thống nhất đất nước về mặt nhà nước", "Điều quân tình nguyện sang Campuchia"], answer: 2 },
+            // Questions 201-270
+            { question: "Để hoàn thành chủ trương thống nhất đất nước về mặt nhà nước, cách mạng miền Nam phải:", options: ["Đồng thời tiến hành cải tạo xã hội chủ nghĩa và xây dựng chủ nghĩa xã hội", "Thiết lập các cấp chính quyền theo chế độ phong kiến", "Hoàn thiện quan hệ tư bản chủ nghĩa", "Bỏ qua giai đoạn cải tạo xã hội chủ nghĩa"], answer: 0 },
+            { question: "Thành phố Sài Gòn được đổi tên là Thành phố Hồ Chí Minh vào năm nào?", options: ["1945", "1954", "1976", "1990"], answer: 2 },
+            { question: "Vì sao việc thống nhất đất nước về mặt nhà nước lại cần được xúc tiến khẩn trương?", options: ["Để mau chóng phát huy toàn bộ sức mạnh mới của đất nước", "Để Đảng và Chính phủ tăng thêm quyền lực", "Để nhận được sự viện trợ từ các nước xã hội chủ nghĩa", "Để thúc đẩy quá trình gia nhập WTO"], answer: 0 },
+            { question: "Quốc hội quyết định đặt tên nước là Cộng hoà xã hội chủ nghĩa Việt Nam vào năm:", options: ["1976", "1980", "1985", "1990"], answer: 0 },
+            { question: "Ai là tác giả của bài hát “Tiến quân ca”?", options: ["Phan Huỳnh Điểu", "Văn Cao", "Đinh Nhu", "Nguyễn Đình Thi"], answer: 1 },
+            { question: "Đặc điểm nổi bật của cách mạng Việt Nam giai đoạn mới theo Đại hội IV (12/1976) là:", options: ["Nước ta đang trong quá trình phát triển kinh tế bền vững", "Nước ta đang trong quá trình từ sản xuất nhỏ tiến thẳng lên CNXH, bỏ qua giai đoạn TBCN", "Nước ta đang hoàn thành giai đoạn quá độ", "Nước ta đã hoàn thành giai đoạn xây dựng CNXH"], answer: 1 },
+            { question: "Đại hội IV xác định đường lối chung của cách mạng XHCN là: “Nắm vững ..., phát huy quyền làm chủ của nhân dân...”", options: ["Quyền lực nhà nước", "Chuyên chính vô sản", "Ngọn cờ độc lập", "Tài chính quốc gia"], answer: 1 },
+            { question: "Thập niên 70, Việt Nam tiến hành cuộc chiến tranh bảo vệ biên giới Tây Nam chống lại:", options: ["Quân Khmer Đỏ", "Quân xâm lược Trung Quốc", "Quân xâm lược Campuchia", "Quân xâm lược Lào"], answer: 0 },
+            { question: "Đại hội V của Đảng được tổ chức ở Hà Nội vào năm nào?", options: ["1952", "1862", "1972", "1982"], answer: 3 },
+            { question: "Đại hội V (1982) xác định: “Tập trung phát triển mạnh ..., coi là mặt trận hàng đầu...”", options: ["Công nghiệp nặng", "Công nghiệp nhẹ", "Nông nghiệp", "Thương nghiệp"], answer: 2 },
+            { question: "Hội nghị TƯ 8 (6/1985) được coi là bước đột phá thứ hai vì đã quyết định:", options: ["Đổi mới đất nước toàn diện", "Xoá bỏ cơ chế tập trung quan liêu, bao cấp", "Mục tiêu đến 2020 trở thành nước công nghiệp", "Chuyển từ tem phiếu sang tiền mặt"], answer: 1 },
+            { question: "Đại hội V (3/1982) xác định hai nhiệm vụ chiến lược của cách mạng Việt Nam là:", options: ["Xây dựng chế độ làm chủ tập thể và bảo vệ Tổ quốc", "Xây dựng thành công CNXH và bảo vệ vững chắc Tổ quốc", "Thực hiện chuyên chính tư sản và bảo vệ Tổ quốc", "Vạch ra chiến lược kinh tế và bảo vệ Tổ quốc"], answer: 1 },
+            { question: "Hội nghị Bộ Chính trị (8/1986) nhận định đặc trưng thời kỳ quá độ ở nước ta là:", options: ["Nền kinh tế có cơ cấu nhiều thành phần", "Nền kinh tế dựa vào doanh nghiệp nhà nước", "Nền kinh tế tự cung, tự cấp", "Nền kinh tế sản xuất hàng hoá nhỏ bị loại bỏ"], answer: 0 },
+            { question: "Thành tựu nổi bật của Việt Nam thời kỳ 1976-1986 là:", options: ["Kinh tế phát triển vượt bậc", "Tỉ lệ lạm phát thấp kỷ lục", "Thắng lợi trong sự nghiệp bảo vệ Tổ quốc và làm nghĩa vụ quốc tế", "Quan hệ ngoại giao với hầu hết các quốc gia"], answer: 2 },
+            { question: "Đại hội VI (12/1986) diễn ra trong bối cảnh lịch sử nào?", options: ["Xu thế đối đầu chi phối quan hệ quốc tế", "Thế giới bước vào “Chiến tranh lạnh”", "Việt Nam đang khủng hoảng kinh tế - xã hội", "Việt Nam đã thoát khỏi khủng hoảng kinh tế - xã hội"], answer: 2 },
+            { question: "Đại hội VI đã nhìn thẳng vào ..., đánh giá đúng ..., nói rõ ...", options: ["Hiện trạng", "Thực tế", "Tình hình", "Sự thật"], answer: 3 },
+            { question: "Đại hội VI nhìn nhận hạn chế, sai lầm (1975-1986) là do:", options: ["Khuyết điểm trong hoạt động tư tưởng, tổ chức, cán bộ của Đảng", "Ảnh hưởng bởi cấm vận của các nước tư bản", "Không nhận được viện trợ từ các nước XHCN", "Người dân không hợp tác"], answer: 0 },
+            { question: "Ba chương trình kinh tế lớn được Đại hội VI (12/1986) đề ra gồm:", options: ["Lương thực - thực phẩm, hàng tiêu dùng, hàng nhập khẩu", "Lương thực - thực phẩm, hàng sản xuất, hàng nhập khẩu", "Lương thực - thực phẩm, hàng tiêu dùng, hàng xuất khẩu", "Lương thực - thực phẩm, hàng sản xuất, hàng xuất khẩu"], answer: 2 },
+            { question: "Đại hội VI (12/1986) xác định cần tăng cường hữu nghị và hợp tác toàn diện với:", options: ["Trung Quốc", "Mỹ", "Liên Xô", "Châu Âu"], answer: 2 },
+            { question: "Bài học quý báu được Đại hội VI (1986) rút ra là Đảng phải quán triệt tư tưởng:", options: ["Lấy dân làm gốc", "Lấy nông làm chính", "Lấy nước làm đầu", "Lấy Đảng làm trọng"], answer: 0 },
+            { question: "Ưu điểm của Nghị quyết 10 (4/1988) về khoán sản phẩm là:", options: ["Chỉ người không nợ thuế mới được vào HTX", "Người dân được giảm 50% thuế nông nghiệp", "Người dân được nhận khoán và canh tác ổn định 15 năm, thu nhập từ 40% sản lượng trở lên", "Các hộ nông dân được chia ruộng bằng nhau"], answer: 2 },
+            { question: "Việt Nam bình thường hoá quan hệ với Mỹ vào năm nào?", options: ["1990", "1993", "1995", "1997"], answer: 2 },
+            { question: "Điền từ: “Trong hệ thống chính trị, ... là một bộ phận và là tổ chức lãnh đạo..., lấy ... làm nguyên tắc tổ chức cơ bản.”", options: ["Nhà nước - đa số thắng tiểu số", "Chính phủ - phê bình và tự phê bình", "Đảng Cộng sản - tập trung dân chủ", "Nhân dân - tập trung dân chủ"], answer: 2 },
+            { question: "Về kinh tế, thời kỳ quá độ lên CNXH ở Việt Nam có đặc điểm gì?", options: ["Còn tồn tại nhiều giai cấp, tầng lớp xã hội", "Còn tồn tại nền kinh tế nhiều thành phần, có thành phần đối lập", "Vận hành theo cơ chế quan liêu bao cấp", "Thực hiện nguyên tắc làm theo năng lực hưởng theo nhu cầu"], answer: 1 },
+            { question: "Hội nghị TƯ 6 (3/1989) xác định yếu tố nào là nền tảng tư tưởng của Đảng?", options: ["Chủ nghĩa tự do", "Chủ nghĩa Mác - Lênin", "Chủ nghĩa Tam dân", "Chủ nghĩa nhân đạo"], answer: 1 },
+            { question: "Nghị quyết Đại hội VII coi ... là nhân tố quyết định, là động lực to lớn.", options: ["Nhân dân", "Con người", "Khoa học, kỹ thuật", "Kinh tế"], answer: 1 },
+            { question: "Hội nghị đột xuất giữa nhiệm kì (1/1994) đã chỉ ra những nguy cơ nào?", options: ["Mất dân chủ, mất quyền lãnh đạo, chệch hướng", "Tụt hậu kinh tế, chệch hướng XHCN, tham nhũng, “diễn biến hoà bình”", "Mất quyền lãnh đạo, mất cân đối kinh tế, “diễn biến hoà bình”", "Chệch hướng XHCN, tụt hậu kinh tế, mất dân chủ"], answer: 1 },
+            { question: "Đại hội VIII (1996) bổ sung đặc trưng tổng quát về mục tiêu xây dựng CNXH là:", options: ["Dân giàu, nước mạnh, xã hội công bằng, văn minh", "Làm theo năng lực, hưởng theo nhu cầu", "Một xã hội bình yên không thay đổi", "Nới rộng khoảng cách giàu nghèo"], answer: 0 },
+            { question: "Quan điểm về công nghiệp hoá của Đại hội VIII xác định thành phần kinh tế nào giữ vai trò chủ đạo?", options: ["Kinh tế nhà nước", "Kinh tế tư nhân", "Kinh tế có vốn đầu tư nước ngoài", "Kinh tế hỗn hợp"], answer: 0 },
+            { question: "Hội nghị TƯ 2 khoá VIII (12/1996) coi những yếu tố nào là quốc sách hàng đầu?", options: ["Giáo dục - đào tạo và văn hoá", "Khoa học công nghệ và cơ sở hạ tầng", "Giáo dục - đào tạo và khoa học công nghệ", "Tài nguyên thiên nhiên và khoa học công nghệ"], answer: 2 },
+            { question: "Mục tiêu tổng quát của Chiến lược phát triển KT-XH 2001-2010 (Đại hội IX) là:", options: ["Tạo nền tảng để đến 2020 nước ta cơ bản trở thành nước công nghiệp hiện đại", "Đổi mới mô hình tăng trưởng, cơ cấu lại nền kinh tế", "Hoàn thiện thể chế, phát triển kinh tế thị trường định hướng XHCN", "Xây dựng nhà nước pháp quyền XHCN"], answer: 0 },
+            { question: "Hội nghị TƯ 5 (3/2002) coi yếu tố nào là bộ phận cấu thành quan trọng của nền kinh tế quốc dân?", options: ["Doanh nghiệp nhà nước", "Kinh tế tập thể", "Kinh tế có vốn đầu tư nước ngoài", "Kinh tế tư nhân"], answer: 3 },
+            { question: "Chủ đề Đại hội X (2006) là: “...sớm đưa nước ta ...”", options: ["Trở thành nước công nghiệp hiện đại", "Thoát khỏi nhóm quốc gia nghèo", "Ra khỏi tình trạng kém phát triển", "Gia nhập nhóm các nước phát triển"], answer: 2 },
+            { question: "Tại Đại hội X, Đảng lần đầu tiên chú trọng đến nhiệm vụ:", options: ["Xây dựng nhà nước pháp quyền", "Xây dựng, chỉnh đốn Đảng", "Xây dựng nền văn hoá tiên tiến, đậm đà bản sắc dân tộc", "Đổi mới căn bản, toàn diện giáo dục"], answer: 1 },
+            { question: "Hội nghị TƯ 7 (3/2003) coi yếu tố nào là tài nguyên quốc gia vô cùng quý giá?", options: ["Khoáng sản", "Đất đai", "Rừng nguyên sinh", "Hệ sinh thái"], answer: 1 },
+            { question: "Quan điểm của Đảng và Nhà nước ta về vấn đề tôn giáo là:", options: ["Khuyến khích người dân theo đạo Phật", "Công nhận cúng ông bà tổ tiên là tôn giáo chính thống", "Tôn trọng và bảo đảm quyền tự do tín ngưỡng", "Khuyến khích người dân tham gia các tổ chức tôn giáo"], answer: 2 },
+            { question: "Quan điểm mới nổi bật của Đại hội X về vấn đề Đảng viên là:", options: ["Cho phép Đảng viên tranh cử ở nước ngoài", "Cho phép Đảng viên làm kinh tế tư nhân", "Cho phép Đảng viên có nhiều quốc tịch", "Cho phép Đảng viên tham gia nhiều tổ chức cơ sở Đảng"], answer: 1 },
+            { question: "Theo Ngân hàng Thế giới, Việt Nam ra khỏi tình trạng nước nghèo vào năm nào?", options: ["2008", "2009", "2010", "2011"], answer: 0 },
+            { question: "Hội nghị TƯ 8 (1995) đề ra Nhà nước sẽ quản lý xã hội bằng:", options: ["Đạo luật", "Sắc lệnh", "Pháp luật", "Chỉ thị"], answer: 2 },
+            { question: "Theo Nghị quyết TƯ 4 khoá X (4/2007), Chính phủ Việt Nam có bao nhiêu bộ và cơ quan ngang bộ?", options: ["22", "40", "45", "60"], answer: 0 },
+            { question: "Lực lượng nào được Đảng xem là rường cột của nước nhà?", options: ["Thanh niên", "Thiếu niên", "Phụ nữ", "Cựu chiến binh"], answer: 0 },
+            { question: "Việt Nam trở thành thành viên thứ 150 của WTO vào năm nào?", options: ["2000", "2002", "2004", "2006"], answer: 3 },
+            { question: "Đến năm 2010, Việt Nam có quan hệ thương mại với bao nhiêu quốc gia và vùng lãnh thổ?", options: ["200", "230", "250", "270"], answer: 1 },
+            { question: "Giai đoạn 2006-2010, đối tác thương mại lớn nhất của Việt Nam là:", options: ["Mỹ", "Nhật", "Liên minh Châu Âu", "Trung Quốc"], answer: 3 },
+            { question: "“Hiệp ước về biên giới trên đất liền Việt Nam - Trung Quốc” được ký kết năm nào?", options: ["1989", "1999", "2009", "2019"], answer: 1 },
+            { question: "Trong công tác tư tưởng, lý luận, ... là lĩnh vực trọng yếu.", options: ["Văn nghệ", "Nghệ thuật", "Báo chí", "Truyền thông"], answer: 2 },
+            { question: "Nghị quyết “Về đổi mới căn bản, toàn diện giáo dục đào tạo” được thông qua năm nào?", options: ["2010", "2013", "2015", "2017"], answer: 1 },
+            { question: "Cương lĩnh 2011 xác định yếu tố nào nếu không ngăn chặn sẽ gây tổn thất khôn lường?", options: ["Quan liêu, mất đoàn kết nội bộ, tả khuynh", "Giáo điều, tham nhũng, cậy quyền", "Quan liêu, tham nhũng, xa rời nhân dân", "Xa rời nhân dân, tả khuynh, tham nhũng"], answer: 2 },
+            { question: "Chủ đề Đại hội XII (2016) là: “...phấn đấu sớm đưa nước ta cơ bản trở thành:”", options: ["Nước có nền nông nghiệp phát triển", "Nước công nghiệp theo hướng hiện đại", "Nước có nền kinh tế dựa vào lâm nghiệp", "Nước có tốc độ phát triển kinh tế nhanh"], answer: 1 },
+            { question: "... là tổ chức liên minh chính trị, ... là cơ sở chính trị của chính quyền nhân dân.", options: ["Hội Chữ thập đỏ Việt Nam", "Hội Liên hiệp Phụ nữ Việt Nam", "Mặt trận Tổ quốc Việt Nam", "Hội Cựu chiến binh Việt Nam"], answer: 2 },
+            { question: "Năm 2012, ASEAN và Trung Quốc đã xây dựng Tuyên bố chung về:", options: ["Phân định biên giới trên bộ", "Ứng xử của các bên ở biển Đông", "Hợp tác toàn diện về thương mại", "Phân định lãnh hải"], answer: 1 },
+            { question: "Bài học kinh nghiệm sâu sắc rút ra sau 10 năm thực hiện Chiến lược KT-XH 2001-2010 là:", options: ["Luôn kiên trì thực hiện đường lối và mục tiêu đổi mới", "Luôn sáng tạo, thay đổi chủ nghĩa Mác - Lênin", "Thay đổi mục tiêu độc lập dân tộc và CNXH", "Ưu tiên tăng trưởng kinh tế hơn công bằng xã hội"], answer: 0 },
+            { question: "GDP bình quân đầu người năm 2010 của Việt Nam đạt:", options: ["1.100USD", "2.100USD", "3.100USD", "4.100USD"], answer: 0 },
+            { question: "Hội nghị TƯ 9 khoá XI coi văn hoá phải được đặt ngang hàng với:", options: ["Kinh tế, chính trị, xã hội", "Khoa học, công nghệ và giáo dục", "Y tế, giáo dục", "Khoa học, giáo dục"], answer: 0 },
+            { question: "Trong xây dựng văn hoá, trọng tâm là:", options: ["Tăng cường dạy ngoại ngữ", "Xây dựng thêm chùa", "Chăm lo xây dựng con người có nhân cách, lối sống tốt đẹp", "Tuyên truyền, phổ biến đạo Phật"], answer: 2 },
+            { question: "Mục tiêu Thiên niên kỷ nào Việt Nam đã hoàn thành trước năm 2015?", options: ["Xoá bỏ tình trạng nghèo đói cùng cực", "Tăng cường bình đẳng giới", "Nâng cao sức khoẻ bà mẹ trẻ em", "Ngăn chặn HIV/AIDS, sốt rét"], answer: 0 },
+            { question: "Nghị quyết TƯ 4 khoá X chỉ rõ yếu tố nào là bộ phận cấu thành chủ quyền thiêng liêng của Tổ quốc?", options: ["Đất", "Biển", "Biên giới", "Rừng"], answer: 1 },
+            { question: "Vấn đề nào được Hội nghị TƯ 4 khoá XI (1/2012) coi là nhiệm vụ cơ bản, lâu dài?", options: ["Thay đổi tên Đảng", "Thay đổi giai cấp lãnh đạo", "Tự diễn biến, tự chuyển hoá", "Phòng chống tham nhũng"], answer: 2 },
+            { question: "Tổ chức nào là cơ quan thường trực của Ban Chỉ đạo TƯ về phòng, chống tham nhũng?", options: ["Ban Kinh tế", "Ban Nội chính Trung ương", "Uỷ ban kiểm tra Trung ương", "Văn phòng Chính phủ"], answer: 1 },
+            { question: "Thành tựu quan trọng nhất sau hơn 30 năm đổi mới là:", options: ["Xây dựng và hoàn thiện từng bước nền kinh tế thị trường định hướng XHCN", "Phổ cập giáo dục bậc Đại học", "Xoá bỏ hoàn toàn phân hoá giàu nghèo", "Đa số người dân sống ở thành thị"], answer: 0 },
+            { question: "Thành tựu nào của Việt Nam được LHQ và cộng đồng quốc tế đánh giá cao?", options: ["Bảo vệ môi trường", "Đột phá trong giáo dục", "Giảm nghèo", "Giảm tệ nạn xã hội"], answer: 2 },
+            { question: "Kinh nghiệm sâu sắc của Đảng sau hơn 30 năm đổi mới là:", options: ["Quán triệt tinh thần lấy dân làm gốc, vì lợi ích của nhân dân", "Thay đổi mục tiêu độc lập dân tộc và CNXH", "Làm từng phần, chia nhỏ từng ngành", "Đặt lợi ích của Đảng, Nhà nước lên trên hết"], answer: 0 },
+            { question: "Trong xây dựng Đảng, nhân tố nào là khâu then chốt, quyết định sự thành bại?", options: ["Đào tạo nhân tài", "Bồi dưỡng trí thức", "Kết nạp đảng viên", "Công tác cán bộ"], answer: 3 },
+            { question: "Cơ chế vận hành của hệ thống chính trị ở nước ta hiện nay là:", options: ["Chính phủ lãnh đạo, Nhà nước quản lý, Đảng làm chủ", "Chính phủ lãnh đạo, người dân quản lý, Nhà nước làm chủ", "Đảng lãnh đạo, Nhà nước quản lý, nhân dân làm chủ", "Đảng lãnh đạo, nhân dân quản lý, Nhà nước làm chủ"], answer: 2 },
+            { question: "Điền từ còn thiếu: “...trong đó có sự hy sinh quên mình của ...”", options: ["Công nhân, nông dân", "Cán bộ, đảng viên", "Tiểu thương, tri thức", "Công nhân, viên chức"], answer: 1 },
+            { question: "Tính đến năm 1986, Đảng ta có bao nhiêu bản cương lĩnh?", options: ["Một", "Hai", "Ba", "Bốn"], answer: 1 },
+            { question: "Cuộc hành quân Lam Sơn 719 của Mỹ - Ngụy bị đánh bại vào năm nào?", options: ["1951", "1961", "1971", "1976"], answer: 2 },
+            { question: "Trong cuộc tiến công chiến lược mùa khô 1966-1967, Mỹ đã tiến hành bao nhiêu cuộc hành quân?", options: ["120 cuộc", "500 cuộc", "895 cuộc", "700 cuộc"], answer: 2 },
+            { question: "Hướng tiến công chủ yếu của quân ta trong cuộc Tiến công năm 1972 là:", options: ["Đông Nam Bộ", "Liên khu V", "Quảng Trị", "Tây Nguyên"], answer: 2 },
+            { question: "Chiến tranh phá hoại miền Bắc lần thứ hai của Mỹ diễn ra trong khoảng thời gian nào?", options: ["Từ 7/1954 đến 9/1955", "Từ 8/1961 đến 1/1962", "Từ 4/1972 đến 1/1973", "Từ 5/1975 đến 5/1976"], answer: 2 }
+        ];
+
+        const PARTS = 9;
+        const QUESTIONS_PER_PART = 30;
+
+        // DOM Elements
+        const homeContainer = document.getElementById('home-container');
+        const quizContainer = document.getElementById('quiz-container');
+        const reviewContainer = document.getElementById('review-container');
+        const partsGrid = document.getElementById('parts-grid');
+        const questionEl = document.getElementById('question');
+        const optionsEl = document.getElementById('options');
+        const progressEl = document.getElementById('progress');
+        const feedbackEl = document.getElementById('feedback');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const backToHomeBtnQuiz = document.getElementById('back-to-home-btn-quiz');
+        const backToHomeBtnReview = document.getElementById('back-to-home-btn-review');
+        const reviewAllIncorrectBtn = document.getElementById('review-all-incorrect-btn');
+        const incorrectCountBadge = document.getElementById('incorrect-count-badge');
+        const resetAllBtn = document.getElementById('reset-all-btn');
+        const reviewTitle = document.getElementById('review-title');
+        const incorrectAnswersListEl = document.getElementById('incorrect-answers-list');
+        const headerSubtitle = document.getElementById('header-subtitle');
+
+        // State
+        let currentPartIndex = 0;
+        let currentQuestionIndexInPart = 0;
+        let questionOffset = 0;
+        let userAnswers = [];
+
+        // --- Functions ---
+
+        function saveProgress() {
+            localStorage.setItem('lichSuDangAnswers_v4', JSON.stringify(userAnswers));
+        }
+
+        function loadProgress() {
+            const savedAnswers = localStorage.getItem('lichSuDangAnswers_v4');
+            userAnswers = savedAnswers ? JSON.parse(savedAnswers) : new Array(questions.length).fill(null);
+        }
+
+        function showHomeScreen() {
+            homeContainer.classList.remove('hidden');
+            quizContainer.classList.add('hidden');
+            reviewContainer.classList.add('hidden');
+            headerSubtitle.textContent = "Chọn một phần để bắt đầu hoặc xem lại các câu sai.";
+            
+            partsGrid.innerHTML = '';
+            for (let i = 0; i < PARTS; i++) {
+                const startNum = i * QUESTIONS_PER_PART + 1;
+                const endNum = Math.min((i + 1) * QUESTIONS_PER_PART, questions.length);
+                const questionsInThisPart = endNum - startNum + 1;
+                
+                const partAnswers = userAnswers.slice(startNum - 1, endNum);
+                const answeredCount = partAnswers.filter(ans => ans !== null).length;
+                const progressPercent = (answeredCount / questionsInThisPart) * 100;
+
+                const partButton = document.createElement('button');
+                partButton.className = 'part-btn bg-white p-5 rounded-xl shadow-md text-left';
+                partButton.dataset.partIndex = i;
+                partButton.innerHTML = `
+                    <h3 class="font-bold text-lg text-gray-800">Phần ${i + 1}</h3>
+                    <p class="text-sm text-gray-500 mb-3">Câu ${startNum} - ${endNum}</p>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1.5">${answeredCount} / ${questionsInThisPart} câu</p>
+                `;
+                partButton.onclick = () => startPart(i);
+                partsGrid.appendChild(partButton);
+            }
+
+            const incorrectCount = userAnswers.filter((ans, index) => ans !== null && ans !== questions[index].answer).length;
+            incorrectCountBadge.textContent = incorrectCount;
+            reviewAllIncorrectBtn.disabled = incorrectCount === 0;
+            reviewAllIncorrectBtn.classList.toggle('opacity-50', incorrectCount === 0);
+        }
+
+        function startPart(partIndex) {
+            currentPartIndex = partIndex;
+            questionOffset = partIndex * QUESTIONS_PER_PART;
+            
+            const firstUnansweredInPart = userAnswers.slice(questionOffset, questionOffset + QUESTIONS_PER_PART).findIndex(ans => ans === null);
+            currentQuestionIndexInPart = (firstUnansweredInPart === -1) ? 0 : firstUnansweredInPart;
+
+            homeContainer.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            headerSubtitle.textContent = `Đang làm Phần ${partIndex + 1}`;
+            loadQuestion(currentQuestionIndexInPart);
+        }
+
+        function loadQuestion(indexInPart) {
+            const globalIndex = indexInPart + questionOffset;
+            const currentQuestion = questions[globalIndex];
+            const questionsInThisPart = Math.min(QUESTIONS_PER_PART, questions.length - questionOffset);
+            
+            questionEl.textContent = `Câu ${globalIndex + 1}: ${currentQuestion.question}`;
+            progressEl.textContent = `Câu ${indexInPart + 1} / ${questionsInThisPart}`;
+            
+            optionsEl.innerHTML = '';
+            feedbackEl.textContent = '';
+            optionsEl.classList.remove('disabled-options');
+
+            currentQuestion.options.forEach((option, optionIndex) => {
+                const button = document.createElement('button');
+                const optionLetter = String.fromCharCode(65 + optionIndex);
+                button.innerHTML = `<span class="font-bold mr-2">${optionLetter}.</span> ${option}`;
+                button.dataset.index = optionIndex;
+                button.className = 'option-btn w-full text-left p-3 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-300';
+                button.onclick = handleOptionClick;
+                optionsEl.appendChild(button);
+            });
+            
+            if (userAnswers[globalIndex] !== null) {
+                showAnswer(userAnswers[globalIndex]);
+            }
+            updateNavButtons();
+        }
+
+        function handleOptionClick(event) {
+            const selectedIndex = parseInt(event.currentTarget.dataset.index);
+            const globalIndex = currentQuestionIndexInPart + questionOffset;
+            if (userAnswers[globalIndex] === null) {
+                userAnswers[globalIndex] = selectedIndex;
+                saveProgress();
+                showAnswer(selectedIndex);
+            }
+        }
+        
+        function showAnswer(selectedIndex) {
+            const globalIndex = currentQuestionIndexInPart + questionOffset;
+            const currentQuestion = questions[globalIndex];
+            const correctAnswerIndex = currentQuestion.answer;
+            const optionButtons = optionsEl.querySelectorAll('.option-btn');
+            
+            optionsEl.classList.add('disabled-options');
+            
+            if (selectedIndex === correctAnswerIndex) {
+                feedbackEl.textContent = 'Chính xác!';
+                feedbackEl.className = 'mt-6 text-center font-semibold h-6 text-green-600';
+                optionButtons[selectedIndex].classList.add('correct');
+            } else {
+                feedbackEl.textContent = 'Không chính xác!';
+                feedbackEl.className = 'mt-6 text-center font-semibold h-6 text-red-600';
+                optionButtons[selectedIndex].classList.add('incorrect');
+                optionButtons[correctAnswerIndex].classList.add('correct');
+            }
+            updateNavButtons();
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndexInPart === 0;
+            const globalIndex = currentQuestionIndexInPart + questionOffset;
+            nextBtn.disabled = userAnswers[globalIndex] === null;
+        }
+
+        function showReviewScreen() {
+            homeContainer.classList.add('hidden');
+            reviewContainer.classList.remove('hidden');
+            headerSubtitle.textContent = "Ôn lại các kiến thức bạn đã trả lời chưa đúng.";
+            incorrectAnswersListEl.innerHTML = '';
+
+            let totalIncorrect = 0;
+
+            for (let i = 0; i < PARTS; i++) {
+                const partStart = i * QUESTIONS_PER_PART;
+                const partEnd = Math.min((i + 1) * QUESTIONS_PER_PART, questions.length);
+                const incorrectInPart = [];
+
+                for (let j = partStart; j < partEnd; j++) {
+                    if (userAnswers[j] !== null && userAnswers[j] !== questions[j].answer) {
+                        incorrectInPart.push({ question: questions[j], index: j, userAnswer: userAnswers[j] });
+                        totalIncorrect++;
+                    }
+                }
+
+                if (incorrectInPart.length > 0) {
+                    const partHeader = document.createElement('h3');
+                    partHeader.className = 'text-xl font-bold text-indigo-700 mb-4 pb-2 border-b-2 border-indigo-200';
+                    partHeader.textContent = `Phần ${i + 1}`;
+                    incorrectAnswersListEl.appendChild(partHeader);
+
+                    incorrectInPart.forEach(({ question, index, userAnswer }) => {
+                        const div = document.createElement('div');
+                        div.className = 'p-4 border border-gray-200 rounded-lg bg-slate-50 mb-4';
+                        div.innerHTML = `
+                            <p class="font-semibold text-gray-800 mb-2">Câu ${index + 1}: ${question.question}</p>
+                            <p class="text-red-600">Đáp án của bạn: <span class="font-medium">${String.fromCharCode(65 + userAnswer)}. ${question.options[userAnswer]}</span></p>
+                            <p class="text-green-600">Đáp án đúng: <span class="font-medium">${String.fromCharCode(65 + question.answer)}. ${question.options[question.answer]}</span></p>
+                        `;
+                        incorrectAnswersListEl.appendChild(div);
+                    });
+                }
+            }
+
+            if (totalIncorrect === 0) {
+                incorrectAnswersListEl.innerHTML = '<p class="text-center text-gray-500">Chúc mừng! Bạn không có câu trả lời nào sai.</p>';
+            }
+        }
+        
+        function resetAllProgress() {
+            if (confirm('Bạn có chắc chắn muốn xoá toàn bộ tiến độ và làm lại từ đầu?')) {
+                localStorage.removeItem('lichSuDangAnswers_v4');
+                init();
+            }
+        }
+
+        // --- Event Listeners ---
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndexInPart > 0) {
+                currentQuestionIndexInPart--;
+                loadQuestion(currentQuestionIndexInPart);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const questionsInThisPart = Math.min(QUESTIONS_PER_PART, questions.length - questionOffset);
+            if (currentQuestionIndexInPart < questionsInThisPart - 1) {
+                currentQuestionIndexInPart++;
+                loadQuestion(currentQuestionIndexInPart);
+            } else {
+                alert(`Bạn đã hoàn thành Phần ${currentPartIndex + 1}!`);
+                showHomeScreen();
+            }
+        });
+
+        backToHomeBtnQuiz.addEventListener('click', showHomeScreen);
+        backToHomeBtnReview.addEventListener('click', showHomeScreen);
+        reviewAllIncorrectBtn.addEventListener('click', showReviewScreen);
+        resetAllBtn.addEventListener('click', resetAllProgress);
+        
+        // --- Initial Load ---
+        function init() {
+            loadProgress();
+            showHomeScreen();
+        }
+
+        init();
+    </script>
+</body>
+</html>
